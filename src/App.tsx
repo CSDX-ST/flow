@@ -1,359 +1,363 @@
-import React, {useCallback, useRef, useState} from 'react'
+"use client"
 
-import './App.css'
-import '@xyflow/react/dist/style.css';
+/**
+ * ReactFlow 应用主组件
+ * Main ReactFlow Application Component
+ *
+ * Features:
+ * - 响应式侧边栏导航 Responsive sidebar navigation
+ * - 自定义圆形节点 Custom circle nodes
+ * - 智能边连接系统 Smart edge connection system
+ * - XY轴精确控制 Precise XY-axis control
+ * - 三角形背景图案 Triangle background pattern
+ * - 拖拽创建新节点 Drag to create new nodes
+ */
 
+import type React from "react"
+import { useCallback, useRef, useState } from "react"
+import "./App.css"
+
+// ReactFlow imports
+import "@xyflow/react/dist/style.css"
 import {
-    addEdge,
-    Background,
-    BackgroundVariant,
-    ConnectionLineType,
-    Controls,
-    EdgeTypes,
-    MiniMap,
-    ReactFlow,
-    reconnectEdge,
-    useEdgesState,
-    useNodesState,
-    ReactFlowProvider,
-    useReactFlow,
-    MarkerType,
-    type Node
-} from '@xyflow/react';
+  addEdge,
+  Background,
+  ConnectionLineType,
+  Controls,
+  type EdgeTypes,
+  MiniMap,
+  ReactFlow,
+  reconnectEdge,
+  useEdgesState,
+  useNodesState,
+  ReactFlowProvider,
+  useReactFlow,
+  MarkerType,
+  type Node,
+  type Connection,
+} from "@xyflow/react"
 
-import {Layout, Menu} from 'tdesign-react';
+// TDesign UI imports
+import { Layout, Menu } from "tdesign-react"
 import {
-    ControlPlatformIcon,
-    DashboardIcon,
-    Edit1Icon,
-    HomeIcon,
-    MailIcon,
-    NotificationFilledIcon,
-    PlayCircleIcon,
-    PreciseMonitorIcon,
-    RootListIcon,
-    SearchIcon,
-    ServerIcon,
-    UserCircleIcon,
-} from 'tdesign-icons-react';
+  ControlPlatformIcon,
+  DashboardIcon,
+  Edit1Icon,
+  HomeIcon,
+  MailIcon,
+  NotificationFilledIcon,
+  PlayCircleIcon,
+  PreciseMonitorIcon,
+  RootListIcon,
+  SearchIcon,
+  ServerIcon,
+  UserCircleIcon,
+} from "tdesign-icons-react"
 
-import TrianglesBackground from './components/CustomBackground/CustomeBg1'
-
-import initialNodes from './components/Initial/initialNodes'
-import initialEdges from './components/Initial/initialEdges'
-import nodeTypes from './components/NodesType'
-import ButtonEdge from './components/CustomEdges/ButtonEdge'
-import ArrowEdge from './components/CustomEdges/ArrowEdge'
-import basicArrowEdge from './components/CustomEdges/basicArrowEdge'
-// import OriginCross from './components/OriginCross'
-
+// Custom components
+import TrianglesBackground from "./components/CustomBackground/CustomeBg1"
+import initialNodes from "./components/Initial/initialNodes"
+import initialEdges from "./components/Initial/initialEdges"
+import nodeTypes from "./components/NodesType"
+import basicArrowEdge from "./components/CustomEdges/basicArrowEdge"
 import { XYAxisControl } from "./features/xy-axis-control"
 
-const edgeTypes: EdgeTypes = {
+// ==================== 配置常量 Configuration Constants ====================
+
+const EDGE_TYPES: EdgeTypes = {
   default: basicArrowEdge,
   straight: basicArrowEdge,
   smoothstep: basicArrowEdge,
   step: basicArrowEdge,
   buttonedge: basicArrowEdge,
   arrowedge: basicArrowEdge,
-};
-
-let id = 1;
-const getId = () => `${id++}`;
-const nodeOrigin = [0, 0.5];
-const { HeadMenu, MenuItem } = Menu;
-
-function App() {
-
-  return (
-    <>
-      <Menu theme="light" value="dashboard" style={{ marginRight: 50, height: '100vh' }}>
-      <MenuItem value="dashboard" icon={<DashboardIcon />}>
-        选项
-      </MenuItem>
-      <MenuItem value="resource" icon={<ServerIcon />}>
-        选项
-      </MenuItem>
-      <MenuItem value="root">
-        <RootListIcon />
-        选项
-      </MenuItem>
-      <MenuItem value="control-platform" icon={<ControlPlatformIcon />}>
-        选项
-      </MenuItem>
-      <MenuItem value="precise-monitor" icon={<PreciseMonitorIcon />}>
-        选项
-      </MenuItem>
-      <MenuItem value="mail" icon={<MailIcon />}>
-        选项
-      </MenuItem>
-      <MenuItem value="user-circle" icon={<UserCircleIcon />}>
-        选项
-      </MenuItem>
-      <MenuItem value="play-circle" icon={<PlayCircleIcon />}>
-        选项
-      </MenuItem>
-      <MenuItem value="edit1" icon={<Edit1Icon />}>
-        选项
-      </MenuItem>
-    </Menu>
-    </>
-  );
 }
 
+const BACKGROUND_SETTINGS = {
+  gap: 50,
+  size: 15,
+  color: "#94a3b8",
+  offsetX: 0,
+  offsetY: 0,
+}
+
+const EDGE_STYLE = {
+  stroke: "#FF0072",
+  strokeWidth: 2,
+}
+
+const MARKER_END_CONFIG = {
+  type: MarkerType.ArrowClosed,
+  width: 30,
+  height: 30,
+  color: "#FF0072",
+}
+
+const NODE_ORIGIN = [0, 0.5]
+const DELETE_KEY = "Delete"
+
+// ==================== 工具函数 Utility Functions ====================
+
+let nodeIdCounter = 1
+const generateNodeId = () => `${nodeIdCounter++}`
+
+// ==================== 组件 Components ====================
+
+/**
+ * 侧边栏菜单组件
+ * Sidebar Menu Component
+ */
+function SidebarMenu() {
+  const { MenuItem } = Menu
+
+  const menuItems = [
+    { value: "dashboard", icon: <DashboardIcon />, label: "仪表板" },
+    { value: "resource", icon: <ServerIcon />, label: "资源" },
+    { value: "root", icon: <RootListIcon />, label: "根目录" },
+    { value: "control-platform", icon: <ControlPlatformIcon />, label: "控制平台" },
+    { value: "precise-monitor", icon: <PreciseMonitorIcon />, label: "精确监控" },
+    { value: "mail", icon: <MailIcon />, label: "邮件" },
+    { value: "user-circle", icon: <UserCircleIcon />, label: "用户" },
+    { value: "play-circle", icon: <PlayCircleIcon />, label: "播放" },
+    { value: "edit1", icon: <Edit1Icon />, label: "编辑" },
+  ]
+
+  return (
+    <Menu theme="light" value="dashboard" style={{ marginRight: 50, height: "100vh" }}>
+      {menuItems.map((item) => (
+        <MenuItem key={item.value} value={item.value} icon={item.icon}>
+          {item.label}
+        </MenuItem>
+      ))}
+    </Menu>
+  )
+}
+
+/**
+ * ReactFlow 主应用组件
+ * Main ReactFlow Application Component
+ */
 function ReactFlowApp() {
-    const proOptions = { hideAttribution: true };
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  // 状态管理 State Management
+  const proOptions = { hideAttribution: true }
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
+  const [selectedNode, setSelectedNode] = useState<Node | null>(null)
 
-  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const { screenToFlowPosition } = useReactFlow()
+  const edgeReconnectSuccessful = useRef(true)
 
-  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
-        setSelectedNode(node);
-      }, []);
-  const onPaneClick = useCallback(() => {
-    setSelectedNode(null);
-  }, []);
+  // ==================== 事件处理函数 Event Handlers ====================
+
+  /**
+   * 处理节点点击事件
+   * Handle node click event
+   */
+  const handleNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+    setSelectedNode(node)
+  }, [])
+
+  /**
+   * 处理画布点击事件 - 清除节点选择
+   * Handle pane click event - Clear node selection
+   */
+  const handlePaneClick = useCallback(() => {
+    setSelectedNode(null)
+  }, [])
+
+  /**
+   * 更新节点位置 - 用于XY轴控制器
+   * Update node position - For XY axis controller
+   */
   const updateNodePosition = useCallback(
     (id: string, newPosition: { x: number; y: number }) => {
-      setNodes((nds) =>
-        nds.map((node) => {
-          if (node.id === id) {
-            return {
-              ...node,
-              position: newPosition,
-            };
-          }
-          return node;
-        })
-      );
+      setNodes((nds) => nds.map((node) => (node.id === id ? { ...node, position: newPosition } : node)))
     },
-    [setNodes]
-  );
-  const { screenToFlowPosition } = useReactFlow();
-    // console.log('screenToFlowPosition:',screenToFlowPosition);
+    [setNodes],
+  )
+
   /**
-   * 定义默认边的选项。
+   * 处理边重连事件
+   * Handle edge reconnection
    */
-  const defaultEdgeOptions = {type:'arrowedge'};
-    const bgSettings = {
-      gap: 50,            // 三角形间距
-      size: 15,           // 三角形边长
-      color: "#94a3b8",   // 颜色
-      offsetX: 0,        // 横向偏移（用于微调位置）
-      offsetY: 0,       // 纵向偏移
-    };
-  const customDeleteKeyCode = 'Delete';
-  const edgeReconnectSuccessful = useRef(true);
+  const handleReconnect = useCallback(
+    (oldEdge, newConnection) => {
+      edgeReconnectSuccessful.current = true
+      setEdges((els) => reconnectEdge(oldEdge, newConnection, els))
+    },
+    [setEdges],
+  )
 
-  const onReconnect = useCallback((oldEdge, newConnection) => {
-    edgeReconnectSuccessful.current = true;
-    setEdges((els) => reconnectEdge(oldEdge, newConnection, els));
-  }, []);
-  const onReconnectStart = useCallback(() => {
-    edgeReconnectSuccessful.current = false;
-  }, []);
+  const handleReconnectStart = useCallback(() => {
+    edgeReconnectSuccessful.current = false
+  }, [])
 
-  const onReconnectEnd = useCallback((_, edge) => {
-    if (!edgeReconnectSuccessful.current) {
-      setEdges((eds) => eds.filter((e) => e.id !== edge.id));
-    }
+  const handleReconnectEnd = useCallback(
+    (_, edge) => {
+      if (!edgeReconnectSuccessful.current) {
+        setEdges((eds) => eds.filter((e) => e.id !== edge.id))
+      }
+      edgeReconnectSuccessful.current = true
+    },
+    [setEdges],
+  )
 
-    edgeReconnectSuccessful.current = true;
-  }, []);
-
-
-    const onConnect = useCallback((newConnection) => {
-      // console.log('触发了 onConnect，参数:', newConnection);
+  /**
+   * 处理节点连接事件 - 创建新的边连接
+   * Handle node connection - Create new edge connections
+   */
+  const handleConnect = useCallback(
+    (newConnection: Connection) => {
       setEdges((prevEdges) => {
-        // console.log('当前旧边:', prevEdges);
+        // 过滤掉相同目标的边，避免重复连接
         const filteredEdges = prevEdges.filter((edge) => {
-          const isSameTarget = edge.target === newConnection.target;
-          const isSameTargetHandle =
-            String(edge.targetHandle) === String(newConnection.targetHandle); // 转为字符串比较
-            // const isSameSourceHandle =
-            //   String(edge.sourceHandle) === String(newConnection.sourceHandle); // 转为字符串比较
+          const isSameTarget = edge.target === newConnection.target
+          const isSameTargetHandle = String(edge.targetHandle) === String(newConnection.targetHandle)
 
-            if (edge.targetHandle ===undefined) {
-                // console.log('目标targetHandle未定义');
-                return !(isSameTarget);
-            }
-            else {
-              // console.log(String(edge.targetHandle), String(newConnection.targetHandle));
-                return !(isSameTarget && isSameTargetHandle);
-            }
-});
+          if (edge.targetHandle === undefined) {
+            return !isSameTarget
+          }
+          return !(isSameTarget && isSameTargetHandle)
+        })
 
-        const newEdges = addEdge({
+        return addEdge(
+          {
             ...newConnection,
-            type: 'arrowedge',
-            markerEnd: { type: MarkerType.ArrowClosed,
-                width:30,
-                height:30,
-                color:'#FF0072'},
-              style: {
-                  stroke: '#FF0072',
-                  strokeWidth: 2,
-                  // strokeDasharray: '5 5',
-              }
+            type: "arrowedge",
+            markerEnd: MARKER_END_CONFIG,
+            style: EDGE_STYLE,
+          },
+          filteredEdges,
+        )
+      })
+    },
+    [setEdges],
+  )
 
-        }, prevEdges);
-        // console.log('更新后的边:', newEdges);
-        return newEdges;
-      });
-    }, [setEdges]);
-
-  const onConnectEnd = useCallback(
+  /**
+   * 处理连接结束事件 - 在空白处创建新节点
+   * Handle connection end - Create new node when dropped on pane
+   */
+  const handleConnectEnd = useCallback(
     (event, connectionState) => {
-      // when a connection is dropped on the pane it's not valid
       if (!connectionState.isValid) {
-        // we need to remove the wrapper bounds, in order to get the correct position
-        const id = getId();
+        const id = generateNodeId()
+        const { clientX, clientY } = "changedTouches" in event ? event.changedTouches[0] : event
 
-        const { clientX, clientY } =
-          'changedTouches' in event ? event.changedTouches[0] : event;
         const newNode = {
           id,
-          position: screenToFlowPosition({
-            x: clientX,
-            y: clientY,
+          position: screenToFlowPosition({ x: clientX, y: clientY }),
+          type: "CircleNode",
+          data: { label: `${id}`, value: "0" },
+          origin: [0, 0.5],
+        }
+
+        setNodes((nds) => nds.concat(newNode))
+
+        setEdges((eds) =>
+          eds.concat({
+            id,
+            source: connectionState.fromNode.id,
+            target: id,
+            sourceHandle: connectionState.fromHandle.id,
+            markerEnd: MARKER_END_CONFIG,
+            style: EDGE_STYLE,
           }),
-            type: 'CircleNode',
-            data: { label: `${id}`, value: '0'},
-            // Node 的原点决定了它相对于其自身坐标的放置方式。 [0， 0] 将其放置在左上角，[0.5， 0.5] 位于中心，[1， 1] 位于其位置的右下角。
-            origin: [0, 0.5],
-
-            // markerEnd: { type: MarkerType.Arrow },
-        };
-
-        setNodes((nds) => nds.concat(newNode));
-
-          let edgeColor = '#FF0072';
-          // console.log("id",connectionState.fromNode.id,connectionState.fromHandle);
-
-          setEdges((eds) =>
-              eds.concat({ id,
-                  source: connectionState.fromNode.id,
-                  target: id ,
-                  sourceHandle: connectionState.fromHandle.id,  // 源节点的句柄ID
-                    // targetHandle: connectionState.fromNode.sourceHandle,    // 目标节点的句柄ID
-                  markerEnd: { type: MarkerType.ArrowClosed,
-                      width:30,
-                      height:30,
-                      color:edgeColor} ,
-                  style: {
-                      stroke: edgeColor,
-                      strokeWidth: 2,
-                      // strokeDasharray: '5 5',
-                  }
-              }),
-        );
-
+        )
       }
     },
-    [screenToFlowPosition],
-  );
-  // const onConnect = useCallback((params) =>
-  //   setEdges((els) => addEdge(params, els)),
-  // );
+    [screenToFlowPosition, setNodes, setEdges],
+  )
 
-    return (
-        <>
-            <ReactFlow
-                  nodes={nodes}
-                  edges={edges}
-                  nodeTypes={nodeTypes}
-                  // edgeTypes={edgeTypes}
-                  onNodesChange={onNodesChange}
-                  onEdgesChange={onEdgesChange}
-                  onConnect={onConnect}
-                  onConnectEnd={onConnectEnd}
-                  onReconnect={onReconnect}
-                  onReconnectStart={onReconnectStart}
-                  onReconnectEnd={onReconnectEnd}
-                  // defaultEdgeOptions={defaultEdgeOptions}
-                  deleteKeyCode={customDeleteKeyCode}
-                  connectionLineType={ConnectionLineType.Straight}
-                  proOptions={proOptions}
-                  nodeOrigin={nodeOrigin}
-                  edgeTypes={edgeTypes}
-                  onPaneClick={onPaneClick}
-                  onNodeClick={onNodeClick}
+  return (
+    <ReactFlow
+      nodes={nodes}
+      edges={edges}
+      nodeTypes={nodeTypes}
+      edgeTypes={EDGE_TYPES}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
+      onConnect={handleConnect}
+      onConnectEnd={handleConnectEnd}
+      onReconnect={handleReconnect}
+      onReconnectStart={handleReconnectStart}
+      onReconnectEnd={handleReconnectEnd}
+      deleteKeyCode={DELETE_KEY}
+      connectionLineType={ConnectionLineType.Straight}
+      proOptions={proOptions}
+      nodeOrigin={NODE_ORIGIN}
+      onPaneClick={handlePaneClick}
+      onNodeClick={handleNodeClick}
+    >
+      <TrianglesBackground {...BACKGROUND_SETTINGS} />
+      <Background id="1" gap={12} size={1} bgColor="#f0f0f3" />
+      <MiniMap pannable zoomable zoomStep={4} offsetScale={3} />
+      <Controls className="[&>button]:bg-background [&>button]:shadow-sm" />
 
+      {selectedNode && <XYAxisControl selectedNode={selectedNode} updateNodePosition={updateNodePosition} />}
+    </ReactFlow>
+  )
+}
 
-              >
-                <TrianglesBackground {...bgSettings} />
+/**
+ * 头部菜单组件
+ * Header Menu Component
+ */
+function HeaderMenu() {
+  const { HeadMenu, MenuItem } = Menu
 
-                {/* 添加 Background 组件 */}
-                  <Background id={'1'} gap={12} size={1} bgColor={'#f0f0f3'}></Background>
+  return (
+    <HeadMenu
+      value="item1"
+      logo={<img width="136" src="https://www.tencent.com/img/index/menu_logo_hover.png" alt="logo" />}
+      operations={
+        <div className="t-menu__operations">
+          <SearchIcon className="t-menu__operations-icon" />
+          <NotificationFilledIcon className="t-menu__operations-icon" />
+          <HomeIcon className="t-menu__operations-icon" />
+        </div>
+      }
+    >
+      <MenuItem value="item1">已选内容</MenuItem>
+      <MenuItem value="item2">菜单内容一</MenuItem>
+      <MenuItem value="item3">菜单内容二</MenuItem>
+      <MenuItem value="item4" disabled>
+        菜单内容三
+      </MenuItem>
+    </HeadMenu>
+  )
+}
 
+/**
+ * 主布局组件
+ * Main Layout Component
+ */
+export default function MainLayout() {
+  const { Header, Content, Footer, Aside } = Layout
 
-                  <MiniMap pannable zoomable zoomStep={4} offsetScale={3}/>
-                  <Controls className="[&>button]:bg-background [&>button]:shadow-sm" />
-                    {selectedNode && (
-                      <XYAxisControl
-                        selectedNode={selectedNode}
-                        updateNodePosition={updateNodePosition}
-                      />
-                    )}
-
-              </ReactFlow>
-        </>
-    )
-};
-
-const { Header, Content, Footer, Aside } = Layout;
-
-export default function BasicDivider() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const onConnect = useCallback(
-    (params) => setEdges((els) => addEdge(params, els)),
-    [],
-  );
-      return (
+  return (
     <div className="tdesign-demo-item--layout">
       <Layout>
         <Header>
-          <HeadMenu
-            value="item1"
-            logo={<img width="136" src="https://www.tencent.com/img/index/menu_logo_hover.png" alt="logo" />}
-            operations={
-              <div className="t-menu__operations">
-                <SearchIcon className="t-menu__operations-icon" />
-                <NotificationFilledIcon className="t-menu__operations-icon" />
-                <HomeIcon className="t-menu__operations-icon" />
-              </div>
-            }
-          >
-            <MenuItem value="item1">已选内容</MenuItem>
-            <MenuItem value="item2">菜单内容一</MenuItem>
-            <MenuItem value="item3">菜单内容二</MenuItem>
-            <MenuItem value="item4" disabled>
-              菜单内容三
-            </MenuItem>
-          </HeadMenu>
+          <HeaderMenu />
         </Header>
 
         <Layout>
-          <Aside style={{ borderTop: '1px solid var(--component-border)' }}>
-            <App />
+          <Aside style={{ borderTop: "1px solid var(--component-border)" }}>
+            <SidebarMenu />
           </Aside>
+
           <Layout>
-
-              {/*Main Content*/}
             <Content>
-                <ReactFlowProvider children={<ReactFlowApp />}>
-
-                </ReactFlowProvider>
-              {/*<div>Content</div>*/}
+              <ReactFlowProvider>
+                <ReactFlowApp />
+              </ReactFlowProvider>
             </Content>
-
 
             <Footer>Copyright @ 2019-2020 Tencent. All Rights Reserved</Footer>
           </Layout>
         </Layout>
       </Layout>
     </div>
-  );
+  )
 }
