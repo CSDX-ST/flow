@@ -62,6 +62,7 @@ import nodeTypes from "./components/NodesType"
 import basicArrowEdge from "./components/CustomEdges/basicArrowEdge"
 import { XYAxisControl } from "./features/xy-axis-control"
 
+import Logo from './assets/flow.svg';
 // ==================== 配置常量 Configuration Constants ====================
 
 const EDGE_TYPES: EdgeTypes = {
@@ -309,7 +310,7 @@ function HeaderMenu() {
   return (
     <HeadMenu
       value="item1"
-      logo={<img width="136" src="https://www.tencent.com/img/index/menu_logo_hover.png" alt="logo" />}
+      logo={<img width="136" src={Logo} alt="logo" />}
       operations={
         <div className="t-menu__operations">
           <SearchIcon className="t-menu__operations-icon" />
@@ -319,10 +320,10 @@ function HeaderMenu() {
       }
     >
       <MenuItem value="item1">已选内容</MenuItem>
-      <MenuItem value="item2">菜单内容一</MenuItem>
-      <MenuItem value="item3">菜单内容二</MenuItem>
+      <MenuItem value="item2">应用方案</MenuItem>
+      <MenuItem value="item3">模板库</MenuItem>
       <MenuItem value="item4" disabled>
-        菜单内容三
+        关于我们
       </MenuItem>
     </HeadMenu>
   )
@@ -336,19 +337,20 @@ export default function MainLayout() {
   const { Header, Content, Footer, Aside } = Layout
 
   return (
-    <div className="tdesign-demo-item--layout">
+    <div className="">
       <Layout>
         <Header>
           <HeaderMenu />
         </Header>
 
         <Layout>
-          <Aside style={{ borderTop: "1px solid var(--component-border)" }}>
-            <SidebarMenu />
-          </Aside>
+
+          {/*<Aside style={{ borderTop: "1px solid var(--component-border)" }}>*/}
+          {/*  <SidebarMenu />*/}
+          {/*</Aside>*/}
 
           <Layout>
-            <Content>
+            <Content style={{ height: "calc(100vh - 64px)", overflow: "auto" }}>
               <ReactFlowProvider>
                 <ReactFlowApp />
               </ReactFlowProvider>
