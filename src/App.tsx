@@ -145,6 +145,9 @@ function ReactFlowApp() {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
   const [selectedNode, setSelectedNode] = useState<Node | null>(null)
 
+  // 节点管理器显示控制
+  const [showNodeManager, setShowNodeManager] = useState(true)
+
   const { screenToFlowPosition } = useReactFlow()
   const edgeReconnectSuccessful = useRef(true)
 
