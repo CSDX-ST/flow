@@ -62,6 +62,8 @@ import nodeTypes from "./components/NodesType"
 import basicArrowEdge from "./components/CustomEdges/basicArrowEdge"
 import { XYAxisControl } from "./features/xy-axis-control"
 
+import NodeManager from './components/node_manager'
+
 import Logo from './assets/flow.svg';
 // ==================== 配置常量 Configuration Constants ====================
 
@@ -146,7 +148,16 @@ function ReactFlowApp() {
   const [selectedNode, setSelectedNode] = useState<Node | null>(null)
 
   // 节点管理器显示控制
+  // 初始化UI控制状态
   const [showNodeManager, setShowNodeManager] = useState(true)
+  const [showResourceMonitor, setShowResourceMonitor] = useState(false)
+
+  // 4. 初始化统计数据
+  const [calculationStats, setCalculationStats] = useState({
+    totalCalculations: 0,
+    lastCalculationTime: 0,
+    averageCalculationTime: 0,
+  })
 
   const { screenToFlowPosition } = useReactFlow()
   const edgeReconnectSuccessful = useRef(true)
@@ -297,7 +308,9 @@ function ReactFlowApp() {
       <Background id="1" gap={12} size={1} bgColor="#f0f0f3" />
       <MiniMap pannable zoomable zoomStep={4} offsetScale={3} />
       <Controls className="[&>button]:bg-background [&>button]:shadow-sm" />
-
+      {showNodeManager && (
+        <NodeManager nodes={nodes}  />
+      )}
       {selectedNode && <XYAxisControl selectedNode={selectedNode} updateNodePosition={updateNodePosition} />}
     </ReactFlow>
   )
