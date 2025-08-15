@@ -285,34 +285,36 @@ function ReactFlowApp() {
   )
 
   return (
-    <ReactFlow
-      nodes={nodes}
-      edges={edges}
-      nodeTypes={nodeTypes}
-      edgeTypes={EDGE_TYPES}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      onConnect={handleConnect}
-      onConnectEnd={handleConnectEnd}
-      onReconnect={handleReconnect}
-      onReconnectStart={handleReconnectStart}
-      onReconnectEnd={handleReconnectEnd}
-      deleteKeyCode={DELETE_KEY}
-      connectionLineType={ConnectionLineType.Straight}
-      proOptions={proOptions}
-      nodeOrigin={NODE_ORIGIN}
-      onPaneClick={handlePaneClick}
-      onNodeClick={handleNodeClick}
-    >
-      <TrianglesBackground {...BACKGROUND_SETTINGS} />
-      <Background id="1" gap={12} size={1} bgColor="#f0f0f3" />
-      <MiniMap pannable zoomable zoomStep={4} offsetScale={3} />
-      <Controls className="[&>button]:bg-background [&>button]:shadow-sm" />
-      {showNodeManager && (
-        <NodeManager nodes={nodes}  />
-      )}
-      {selectedNode && <XYAxisControl selectedNode={selectedNode} updateNodePosition={updateNodePosition} />}
-    </ReactFlow>
+    <div className="w-full h-full relative">
+      {showNodeManager && <NodeManager nodes={nodes} />}
+      <ReactFlow className="w-full h-full relative"
+
+                 nodes={nodes}
+                 edges={edges}
+                 nodeTypes={nodeTypes}
+                 edgeTypes={EDGE_TYPES}
+                 onNodesChange={onNodesChange}
+                 onEdgesChange={onEdgesChange}
+                 onConnect={handleConnect}
+                 onConnectEnd={handleConnectEnd}
+                 onReconnect={handleReconnect}
+                 onReconnectStart={handleReconnectStart}
+                 onReconnectEnd={handleReconnectEnd}
+                 deleteKeyCode={DELETE_KEY}
+                 connectionLineType={ConnectionLineType.Straight}
+                 proOptions={proOptions}
+                 nodeOrigin={NODE_ORIGIN}
+                 onPaneClick={handlePaneClick}
+                 onNodeClick={handleNodeClick}
+      >
+        <TrianglesBackground {...BACKGROUND_SETTINGS} />
+        <Background id="1" gap={12} size={1} bgColor="#f0f0f3"/>
+        <MiniMap pannable zoomable zoomStep={4} offsetScale={3}/>
+        <Controls className="[&>button]:bg-background [&>button]:shadow-sm"/>
+
+        {selectedNode && <XYAxisControl selectedNode={selectedNode} updateNodePosition={updateNodePosition}/>}
+      </ReactFlow>
+    </div>
   )
 }
 
@@ -321,14 +323,14 @@ function ReactFlowApp() {
  * Header Menu Component
  */
 function HeaderMenu() {
-  const { HeadMenu, MenuItem } = Menu
+  const {HeadMenu, MenuItem} = Menu
 
   return (
-    <HeadMenu
-      value="item1"
-      logo={<img width="136" src={Logo} alt="logo" />}
-      operations={
-        <div className="t-menu__operations">
+      <HeadMenu
+          value="item1"
+          logo={<img width="136" src={Logo} alt="logo"/>}
+          operations={
+            <div className="t-menu__operations">
           <SearchIcon className="t-menu__operations-icon" />
           <NotificationFilledIcon className="t-menu__operations-icon" />
           <HomeIcon className="t-menu__operations-icon" />
@@ -353,7 +355,7 @@ export default function MainLayout() {
   const { Header, Content, Footer, Aside } = Layout
 
   return (
-    <div className="">
+    <div >
       <Layout>
         <Header>
           <HeaderMenu />
@@ -366,10 +368,13 @@ export default function MainLayout() {
           {/*</Aside>*/}
 
           <Layout>
-            <Content style={{ height: "calc(100vh - 64px)", overflow: "auto" }}>
+            <Content  style={{ height: "calc(100vh - 64px)", overflow: "auto" }}>
+
               <ReactFlowProvider>
                 <ReactFlowApp />
               </ReactFlowProvider>
+
+
             </Content>
 
             <Footer>Copyright @ 2019-2020 Tencent. All Rights Reserved</Footer>
