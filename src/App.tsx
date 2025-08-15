@@ -287,25 +287,25 @@ function ReactFlowApp() {
   return (
     <div className="w-full h-full relative">
       {showNodeManager && <NodeManager nodes={nodes} />}
-      <ReactFlow className="w-full h-full relative"
 
-                 nodes={nodes}
-                 edges={edges}
-                 nodeTypes={nodeTypes}
-                 edgeTypes={EDGE_TYPES}
-                 onNodesChange={onNodesChange}
-                 onEdgesChange={onEdgesChange}
-                 onConnect={handleConnect}
-                 onConnectEnd={handleConnectEnd}
-                 onReconnect={handleReconnect}
-                 onReconnectStart={handleReconnectStart}
-                 onReconnectEnd={handleReconnectEnd}
-                 deleteKeyCode={DELETE_KEY}
-                 connectionLineType={ConnectionLineType.Straight}
-                 proOptions={proOptions}
-                 nodeOrigin={NODE_ORIGIN}
-                 onPaneClick={handlePaneClick}
-                 onNodeClick={handleNodeClick}
+      <ReactFlow className="w-full h-full relative"
+         nodes={nodes}
+         edges={edges}
+         nodeTypes={nodeTypes}
+         edgeTypes={EDGE_TYPES}
+         onNodesChange={onNodesChange}
+         onEdgesChange={onEdgesChange}
+         onConnect={handleConnect}
+         onConnectEnd={handleConnectEnd}
+         onReconnect={handleReconnect}
+         onReconnectStart={handleReconnectStart}
+         onReconnectEnd={handleReconnectEnd}
+         deleteKeyCode={DELETE_KEY}
+         connectionLineType={ConnectionLineType.Straight}
+         proOptions={proOptions}
+         nodeOrigin={NODE_ORIGIN}
+         onPaneClick={handlePaneClick}
+         onNodeClick={handleNodeClick}
       >
         <TrianglesBackground {...BACKGROUND_SETTINGS} />
         <Background id="1" gap={12} size={1} bgColor="#f0f0f3"/>

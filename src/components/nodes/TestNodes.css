@@ -56,6 +56,10 @@
   width: 100%;
 }
 
+.h-full {
+  height: 100%;
+}
+
 .px-2 {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
