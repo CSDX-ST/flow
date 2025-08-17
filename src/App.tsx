@@ -99,6 +99,20 @@ const MARKER_END_CONFIG = {
 const NODE_ORIGIN = [0, 0.5]
 const DELETE_KEY = "Delete"
 
+
+// 操作日志接口
+interface OperationLog {
+  id: string
+  timestamp: number
+  type: "input_change" | "calculation" | "formula_update" | "node_add" | "node_delete" | "node_rename"
+  nodeId: string
+  nodeLabel: string
+  nodeType: string
+  details: string
+  oldValue?: any
+  newValue?: any
+  duration?: number
+}
 // ==================== 工具函数 Utility Functions ====================
 
 let nodeIdCounter = 1
@@ -284,9 +298,48 @@ function ReactFlowApp() {
     [screenToFlowPosition, setNodes, setEdges],
   )
 
+  // 操作日志状态
+  const [operationLogs, setOperationLogs] = useState<OperationLog[]>([])
+  // 添加操作日志的函数
+  const addOperationLog = useCallback((log: Omit<OperationLog, "id" | "timestamp">) => {
+    const newLog: OperationLog = {
+      ...log,
+      id: `log-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      timestamp: Date.now(),
+    }
+
+    setOperationLogs((prev) => {
+      // 保持最多100条记录，避免内存泄漏
+      const newLogs = [newLog, ...prev].slice(0, 100)
+      return newLogs
+    })
+  }, [])
+
+  // 删除节点
+  const deleteNode = useCallback(
+    (nodeId: string) => {
+      const node = nodes.find((n) => n.id === nodeId)
+
+      setNodes((nds) => nds.filter((node) => node.id !== nodeId))
+      setEdges((eds) => eds.filter((edge) => edge.source !== nodeId && edge.target !== nodeId))
+
+      // 记录节点删除日志
+      if (node) {
+        addOperationLog({
+          type: "node_delete",
+          nodeId,
+          nodeLabel: node.data.label,
+          nodeType: node.type!,
+          details: `删除节点`,
+        })
+      }
+    },
+    [setNodes, setEdges, nodes, addOperationLog],
+  )
+
   return (
     <div className="w-full h-full relative">
-      {showNodeManager && <NodeManager nodes={nodes} />}
+      {showNodeManager && <NodeManager nodes={nodes}  onDeleteNode={deleteNode}/>}
 
       <ReactFlow className="w-full h-full relative"
          nodes={nodes}
