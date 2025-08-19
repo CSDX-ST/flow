@@ -62,6 +62,7 @@ import nodeTypes from "./components/NodesType"
 import basicArrowEdge from "./components/CustomEdges/basicArrowEdge"
 import { XYAxisControl } from "./features/xy-axis-control"
 
+import { ResourceMonitor } from "./components/resource-monitor"
 import NodeManager from './components/node_manager'
 
 import Logo from './assets/flow.svg';
@@ -364,7 +365,7 @@ function ReactFlowApp() {
         <Background id="1" gap={12} size={1} bgColor="#f0f0f3"/>
         <MiniMap pannable zoomable zoomStep={4} offsetScale={3}/>
         <Controls className="[&>button]:bg-background [&>button]:shadow-sm"/>
-
+        <ResourceMonitor />
         {selectedNode && <XYAxisControl selectedNode={selectedNode} updateNodePosition={updateNodePosition}/>}
       </ReactFlow>
     </div>

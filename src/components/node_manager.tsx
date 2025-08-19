@@ -1,13 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useReactFlow } from "@xyflow/react"
+import { useCallback, useState,useMemo} from "react"
 import type { Node } from "@xyflow/react"
 
 import { Card, CardContent, CardTitle } from "./ui/card"
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { Badge } from "./ui/badge"
-import { Plus, Trash2, Edit3, X, ChevronDown, Settings } from "lucide-react"
+import { Plus, Trash2, Edit3, X, ChevronDown, Settings, Focus} from "lucide-react"
 
 interface NodeManagerProps {
   nodes: Node[]
@@ -46,6 +47,23 @@ export default function NodeManager({ nodes, onAddNode, onDeleteNode, onRenameNo
     onAddNode(type, position)
   }
 
+  const rf = useReactFlow()
+  const [filter, setFilter] = useState<string>("")
+
+  const focusNode = useCallback(
+    (id: string) => {
+      const node = nodes.find((n) => n.id === id)
+      if (!node) return
+      rf.setCenter(node.position.x + 100, node.position.y + 50, { zoom: 1.2, duration: 400 })
+      rf.setNodes((nds) =>
+        nds.map((n) => ({
+          ...n,
+          selected: n.id === id,
+        })),
+      )
+    },
+    [nodes, rf],
+  )
   const startEditing = (nodeId: string, currentLabel: string) => {
     setEditingNode(nodeId)
     setEditLabel(currentLabel)
@@ -165,22 +183,21 @@ export default function NodeManager({ nodes, onAddNode, onDeleteNode, onRenameNo
                   </div>
                   {editingNode !== node.id && (
                     <div className="flex items-center space-x-1">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-6 w-6 p-0 text-gray-700 hover:text-gray-800"
-                        onClick={() => onFocusNode(node.id)}
-                        title="聚焦到此节点"
-                      >
-                        <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
-                          />
-                        </svg>
-                      </Button>
+
+                        <div key={node.id} >
+                          <Button variant="secondary" size="icon" onClick={() => focusNode(node.id)} title="定位">
+                            {/*<svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">*/}
+                            {/*  <path*/}
+                            {/*    strokeLinecap="round"*/}
+                            {/*    strokeLinejoin="round"*/}
+                            {/*    strokeWidth={2}*/}
+                            {/*    d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"*/}
+                            {/*  />*/}
+                            {/*</svg>*/}
+                              <Focus className="h-4 w-4" />
+                          </Button>
+                        </div>
+
                       <Button
                         size="sm"
                         variant="ghost"

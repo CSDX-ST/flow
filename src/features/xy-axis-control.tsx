@@ -223,7 +223,7 @@ export function XYAxisControl({ selectedNode, updateNodePosition }: XYAxisContro
   const arrowDistance = zoom * (nodeWidth + CONSTANTS.BASIC_DISTANCE)
 
   // 计算节点在流程图坐标系中的中心位置
-  const nodeCenterX = currentNode.position.x + nodeWidth / 2
+  const nodeCenterX = currentNode.position.x + nodeWidth / 2 - 1.75
   const nodeCenterY = currentNode.position.y
 
   // 将流程图坐标转换为屏幕坐标（考虑视口变换）
