@@ -182,34 +182,37 @@ export default function NodeManager({ nodes, onAddNode, onDeleteNode, onRenameNo
                     )}
                   </div>
                   {editingNode !== node.id && (
-                    <div className="flex items-center space-x-1">
+                    <div className="flex items-center space-x-1 ">
 
-                        <div key={node.id} >
-                          <Button variant="secondary" size="icon" onClick={() => focusNode(node.id)} title="定位">
-                            {/*<svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">*/}
-                            {/*  <path*/}
-                            {/*    strokeLinecap="round"*/}
-                            {/*    strokeLinejoin="round"*/}
-                            {/*    strokeWidth={2}*/}
-                            {/*    d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"*/}
-                            {/*  />*/}
-                            {/*</svg>*/}
-                              <Focus className="h-4 w-4" />
-                          </Button>
-                        </div>
+                      <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 p-0 hover:bg-gray-200/80! hover:text-blue-600 focus:ring-1 focus:ring-blue-400 focus:ring-op"
+                          onClick={() => focusNode(node.id)} title="定位">
+
+                        {/*<svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">*/}
+                        {/*  <path*/}
+                        {/*    strokeLinecap="round"*/}
+                        {/*    strokeLinejoin="round"*/}
+                        {/*    strokeWidth={2}*/}
+                        {/*    d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"*/}
+                        {/*  />*/}
+                        {/*</svg>*/}
+                          <Focus className="h-3 w-3 " />
+                      </Button>
 
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-6 w-6 p-0"
+                        className="h-6 w-6 p-0 hover:text-blue-600 hover:bg-gray-200/80! hover:text-blue-600 focus:ring-1 focus:ring-blue-400 focus:ring-op"
                         onClick={() => startEditing(node.id, node.data.label)}
                       >
-                        <Edit3 className="h-3 w-3" />
+                        <Edit3 className="h-3 w-3 " />
                       </Button>
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                        className="h-6 w-6 p-0 text-red-500/60 hover:text-red-600/80 hover:bg-gray-200/80! focus:ring-1 focus:ring-blue-400 focus:ring-op"
                         onClick={() => onDeleteNode(node.id)}
                       >
                         <Trash2 className="h-3 w-3" />
