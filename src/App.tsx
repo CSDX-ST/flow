@@ -62,6 +62,7 @@ import nodeTypes from "./components/NodesType"
 import basicArrowEdge from "./components/CustomEdges/basicArrowEdge"
 import { XYAxisControl } from "./features/xy-axis-control"
 
+import { CollapsibleMinimap } from "@/components/collapsible-minimap"
 import { ResourceMonitor } from "./components/resource-monitor"
 import NodeManager from './components/node_manager'
 
@@ -178,6 +179,8 @@ function ReactFlowApp() {
   const edgeReconnectSuccessful = useRef(true)
 
   // ==================== 事件处理函数 Event Handlers ====================
+
+
 
   /**
    * 处理节点点击事件
@@ -363,7 +366,8 @@ function ReactFlowApp() {
       >
         <TrianglesBackground {...BACKGROUND_SETTINGS} />
         <Background id="1" gap={12} size={1} bgColor="#f0f0f3"/>
-        <MiniMap pannable zoomable zoomStep={4} offsetScale={3}/>
+        {/*<MiniMap pannable zoomable zoomStep={4} offsetScale={3}/>*/}
+        <CollapsibleMinimap />
         <Controls className="[&>button]:bg-background [&>button]:shadow-sm"/>
         <ResourceMonitor />
         {selectedNode && <XYAxisControl selectedNode={selectedNode} updateNodePosition={updateNodePosition}/>}
