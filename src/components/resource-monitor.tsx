@@ -79,7 +79,7 @@ export function ResourceMonitor() {
   }, [])
 
   return (
-    <Card className="w-42 text-gray-800/80 fixed -bottom-2 -left-2 z-10 border-0 select-none">
+    <Card className="w-42 text-gray-800/80 fixed -bottom-2 -left-2 z-11 border-0 select-none absolute">
       {/*<CardHeader className="pb-2">*/}
       {/*  <CardTitle className="text-sm font-medium">性能监控</CardTitle>*/}
       {/*</CardHeader>*/}

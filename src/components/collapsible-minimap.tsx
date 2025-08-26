@@ -23,7 +23,7 @@ export function CollapsibleMinimap({
       case "output":
         return "#6865A5"
       default:
-        return "#bbbcc0"
+        return "#4a4b4d"
     }
   },
   nodeStrokeWidth = 3,
