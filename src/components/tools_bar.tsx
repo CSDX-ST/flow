@@ -4,10 +4,9 @@ import { useState, useCallback } from "react"
 import { useReactFlow, useStoreApi, Panel, MiniMap, Background } from "@xyflow/react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { Maximize, Map, Grid3X3, MousePointer, Move, Plus, Undo, Redo } from "lucide-react"
+import { Maximize, Map, Grid3X3, MousePointer, Move, Plus, Undo, Redo, Workflow } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { ZoomSelect } from "@/components/zoom-select"
-import { CollapsibleMinimap } from "@/components/collapsible-minimap"
 
 interface ReactFlowToolsProps {
   onAddNode?: () => void
@@ -16,6 +15,16 @@ interface ReactFlowToolsProps {
   onRedo?: () => void
   canUndo?: boolean
   canRedo?: boolean
+  onEdgeTypeChange?: (edgeType: EdgeType) => void
+}
+
+export type EdgeType = "default" | "step" | "straight" | "smoothstep"
+
+const edgeTypeNames: Record<EdgeType, string> = {
+  default: "贝塞尔",
+  step: "阶梯",
+  straight: "直线",
+  smoothstep: "平滑阶梯",
 }
 
 export const ReactFlowTools = ({
@@ -25,6 +34,7 @@ export const ReactFlowTools = ({
   onRedo,
   canUndo = false,
   canRedo = false,
+  onEdgeTypeChange,
 }: ReactFlowToolsProps) => {
   const { fitView } = useReactFlow()
   const store = useStoreApi()
@@ -32,6 +42,20 @@ export const ReactFlowTools = ({
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [backgroundVisible, setBackgroundVisible] = useState(true)
   const [interactionMode, setInteractionMode] = useState<"selection" | "pan">("selection")
+  const [edgeType, setEdgeType] = useState<EdgeType>("default")
+
+  const handleEdgeTypeChange = useCallback(() => {
+
+    const edgeTypes: EdgeType[] = ["default", "step", "straight", "smoothstep"]
+    const currentIndex = edgeTypes.indexOf(edgeType)
+    const nextIndex = (currentIndex + 1) % edgeTypes.length
+    const newType = edgeTypes[nextIndex]
+
+    setEdgeType(newType)
+    if (onEdgeTypeChange) {
+      onEdgeTypeChange(newType)
+    }
+  }, [edgeType, onEdgeTypeChange])
 
   const handleFitView = useCallback(() => {
     fitView({ padding: 0.1 })
@@ -63,10 +87,10 @@ export const ReactFlowTools = ({
 
   return (
     <TooltipProvider>
-      <Panel
-        position="bottom-center"
-        className="flex items-center gap-2 bg-background border rounded-lg p-2 shadow-lg mb-4"
-      >
+      <Panel position="bottom-center" className="flex items-center gap-2 bg-white rounded-lg p-1 shadow-lg mb-6! border border-gray-400/60 z-10!">
+
+        <Separator orientation="vertical" className="h-6" />
+        {/*切换模式*/}
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -74,14 +98,11 @@ export const ReactFlowTools = ({
               size="sm"
               onClick={toggleInteractionMode}
               disabled={readonly}
-              className="h-8 w-8 p-0 flex-shrink-0"
+              className="h-8 w-8 p-0 flex-shrink-0 hover:bg-gray-100 focus:outline-none"
             >
               {interactionMode === "selection" ? <MousePointer className="h-4 w-4" /> : <Move className="h-4 w-4" />}
             </Button>
           </TooltipTrigger>
-          <TooltipContent>
-            {interactionMode === "selection" ? "Switch to Pan Mode" : "Switch to Selection Mode"}
-          </TooltipContent>
         </Tooltip>
 
         <Separator orientation="vertical" className="h-6" />
@@ -98,7 +119,6 @@ export const ReactFlowTools = ({
               <Undo className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Undo</TooltipContent>
         </Tooltip>
 
         <Tooltip>
@@ -113,17 +133,31 @@ export const ReactFlowTools = ({
               <Redo className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Redo</TooltipContent>
         </Tooltip>
 
+        <Separator orientation="vertical" className="h-6" />
 
-
-
+        {/*切换连线类型*/}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleEdgeTypeChange}
+              disabled={readonly}
+              className="h-8 px-3 flex items-center gap-1 flex-shrink-0 hover:bg-gray-100 focus:outline-none"
+            >
+              <Workflow className="h-4 w-4" />
+              <span className="text-xs font-medium">{edgeTypeNames[edgeType]}</span>
+            </Button>
+          </TooltipTrigger>
+          {/*<TooltipContent>切换连线类型</TooltipContent>*/}
+        </Tooltip>
 
         <Separator orientation="vertical" className="h-6" />
 
         <ZoomSelect className="h-8" />
-
+{/*只读：未做*/}
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -136,36 +170,34 @@ export const ReactFlowTools = ({
               <Maximize className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Fit View</TooltipContent>
         </Tooltip>
 
+        {/*开启/关闭minimap*/}
         <Tooltip>
           <TooltipTrigger asChild>
-            {/*按下去无反应？？*/}
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className="h-8 px-2 flex items-center justify-center bg-card border border-border rounded-lg shadow-lg hover:bg-accent z-50 relative"
+              onClick={() => setMinimapVisible(!minimapVisible)}
+              className="h-8 w-8 p-0 flex-shrink-0 hover:bg-gray-100 focus:outline-none"
             >
               <Map className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Toggle Minimap</TooltipContent>
         </Tooltip>
 
+        {/*显示背景网格*/}
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               variant={backgroundVisible ? "default" : "outline"}
               size="sm"
               onClick={() => setBackgroundVisible(!backgroundVisible)}
-              className="h-8 w-8 p-0 flex-shrink-0"
+              className="h-8 w-8 p-0 flex-shrink-0 hover:bg-gray-100 focus:outline-none"
             >
               <Grid3X3 className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Toggle Background</TooltipContent>
         </Tooltip>
 
         <Separator orientation="vertical" className="h-6" />
@@ -183,17 +215,11 @@ export const ReactFlowTools = ({
                 <Plus className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Add Node</TooltipContent>
           </Tooltip>
         )}
       </Panel>
 
-      {minimapVisible &&
-          <MiniMap
-          position="bottom-right"
-          className="bg-background border rounded"
-      />
-      }
+      {minimapVisible && <MiniMap position="bottom-right" className="bg-background rounded shadow-lg " />}
 
       {backgroundVisible && <Background id="1" gap={12} size={1} bgColor="#f0f0f3" />}
     </TooltipProvider>

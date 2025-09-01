@@ -62,8 +62,9 @@ export const ZoomSelect = ({ className = "", maxZoom = 2, minZoom = 0.25 }: Zoom
             bg-white border border-gray-200 rounded-lg
             text-sm font-medium text-gray-700
             hover:bg-gray-50 hover:border-gray-300
-            focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1
+            focus:outline-none focus:ring-1 focus:ring-blue-400 focus:ring-offset-1
             shadow-sm cursor-pointer
+            
             ${className}
           `}
         >
@@ -72,26 +73,26 @@ export const ZoomSelect = ({ className = "", maxZoom = 2, minZoom = 0.25 }: Zoom
         </button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="center" className="w-40">
-        <DropdownMenuItem onClick={handleZoomIn} className="flex items-center gap-2">
+      <DropdownMenuContent align="center" className="w-40 bg-white border-0 ">
+        <DropdownMenuItem onClick={handleZoomIn} className="flex items-center gap-2 hover:bg-gray-100">
           <ZoomIn className="h-4 w-4" />
           Zoom In
         </DropdownMenuItem>
 
-        <DropdownMenuItem onClick={handleZoomOut} className="flex items-center gap-2">
+        <DropdownMenuItem onClick={handleZoomOut} className="flex items-center gap-2 hover:bg-gray-100">
           <ZoomOut className="h-4 w-4" />
           Zoom Out
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem onClick={() => handleZoomToLevel(0.5)}>Zoom to 50%</DropdownMenuItem>
+        <DropdownMenuItem className="flex items-center gap-2 hover:bg-gray-100" onClick={() => handleZoomToLevel(0.5)}>Zoom to 50%</DropdownMenuItem>
 
-        <DropdownMenuItem onClick={() => handleZoomToLevel(1)}>Zoom to 100%</DropdownMenuItem>
+        <DropdownMenuItem className="flex items-center gap-2 hover:bg-gray-100" onClick={() => handleZoomToLevel(1)}>Zoom to 100%</DropdownMenuItem>
 
-        <DropdownMenuItem onClick={() => handleZoomToLevel(1.5)}>Zoom to 150%</DropdownMenuItem>
+        <DropdownMenuItem className="flex items-center gap-2 hover:bg-gray-100" onClick={() => handleZoomToLevel(1.5)}>Zoom to 150%</DropdownMenuItem>
 
-        <DropdownMenuItem onClick={() => handleZoomToLevel(2)}>Zoom to 200%</DropdownMenuItem>
+        <DropdownMenuItem className="flex items-center gap-2 hover:bg-gray-100" onClick={() => handleZoomToLevel(2)}>Zoom to 200%</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

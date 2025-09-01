@@ -62,14 +62,16 @@ import nodeTypes from "./components/NodesType"
 import basicArrowEdge from "./components/CustomEdges/basicArrowEdge"
 import { XYAxisControl } from "./features/xy-axis-control"
 
+import { CollapsibleTabler } from "@/components/table_manager"
 import { CollapsibleMinimap } from "@/components/collapsible-minimap"
 import { ResourceMonitor } from "./components/resource-monitor"
 import NodeManager from './components/node_manager'
+import { ReactFlowTools } from "@/components/tools_bar"
 
 import Logo from './assets/flow.svg';
 // ==================== 配置常量 Configuration Constants ====================
 
-const EDGE_TYPES: EdgeTypes = {
+const EdgeType: EdgeTypes = {
   default: basicArrowEdge,
   straight: basicArrowEdge,
   smoothstep: basicArrowEdge,
@@ -162,7 +164,7 @@ function ReactFlowApp() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
   const [selectedNode, setSelectedNode] = useState<Node | null>(null)
-
+  const [edgeType, setEdgeType] = useState<EdgeType>("default")
   // 节点管理器显示控制
   // 初始化UI控制状态
   const [showNodeManager, setShowNodeManager] = useState(true)
@@ -179,7 +181,43 @@ function ReactFlowApp() {
   const edgeReconnectSuccessful = useRef(true)
 
   // ==================== 事件处理函数 Event Handlers ====================
+  const handleEdgeTypeChange = useCallback(
+    (newType: EdgeType) => {
+      setEdgeType(newType)
+      // Update all existing edges to use the new type
+      setEdges((eds) =>
+        eds.map((edge) => ({
+          ...edge,
+          type: newType,
+        })),
+      )
+    },
+    [setEdges],
+  )
 
+  const renameNode = useCallback(
+    (nodeId: string, newLabel: string) => {
+      const node = nodes.find((n) => n.id === nodeId)
+      const oldLabel = node?.data.label
+
+      setNodes((nds) =>
+        nds.map((node) => {
+          if (node.id === nodeId) {
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                label: newLabel,
+              },
+            }
+          }
+          return node
+        }),
+      )
+
+    },
+    [setNodes, nodes],
+  )
 
 
   /**
@@ -302,6 +340,28 @@ function ReactFlowApp() {
     [screenToFlowPosition, setNodes, setEdges],
   )
 
+// 没想好怎么写
+  const handleAddNode = useCallback((event, connectionState) => {
+    const id = generateNodeId()
+    const newNode = {
+      id,
+      data: { label: `${id}`, value: "0" },
+      type: "CircleNode",
+      position: { x: Math.random() * 400, y: Math.random() * 300 },
+    }
+    setNodes((nds) => nds.concat(newNode))
+    // setEdges((eds) =>
+    //   eds.concat({
+    //     id,
+    //     source: connectionState.fromNode.id,
+    //     target: id,
+    //     sourceHandle: connectionState.fromHandle.id,
+    //     markerEnd: MARKER_END_CONFIG,
+    //     style: EDGE_STYLE,
+    //   }),
+    // )
+  }, [nodes.length, setNodes])
+
   // 操作日志状态
   const [operationLogs, setOperationLogs] = useState<OperationLog[]>([])
   // 添加操作日志的函数
@@ -343,13 +403,14 @@ function ReactFlowApp() {
 
   return (
     <div className="w-full h-full relative">
-      {showNodeManager && <NodeManager nodes={nodes}  onDeleteNode={deleteNode}/>}
+      {showNodeManager && <NodeManager nodes={nodes}  onDeleteNode={deleteNode} onRenameNode={renameNode}/>}
+
 
       <ReactFlow className="w-full h-full relative"
          nodes={nodes}
          edges={edges}
          nodeTypes={nodeTypes}
-         edgeTypes={EDGE_TYPES}
+         edgeTypes={EdgeType}
          onNodesChange={onNodesChange}
          onEdgesChange={onEdgesChange}
          onConnect={handleConnect}
@@ -365,10 +426,11 @@ function ReactFlowApp() {
          onNodeClick={handleNodeClick}
       >
         <TrianglesBackground {...BACKGROUND_SETTINGS} />
-        <Background id="1" gap={12} size={1} bgColor="#f0f0f3"/>
-        {/*<MiniMap pannable zoomable zoomStep={4} offsetScale={3}/>*/}
-        <CollapsibleMinimap />
-        <Controls className="[&>button]:bg-background [&>button]:shadow-sm"/>
+        {/*<Background id="1" gap={12} size={1} bgColor="#f0f0f3"/>*/}
+
+        {/*<CollapsibleMinimap />*/}
+        {/*<Controls  orientation="horizontal" />*/}
+        <ReactFlowTools />
         <ResourceMonitor />
         {selectedNode && <XYAxisControl selectedNode={selectedNode} updateNodePosition={updateNodePosition}/>}
       </ReactFlow>
@@ -409,9 +471,9 @@ function HeaderMenu() {
  * 主布局组件
  * Main Layout Component
  */
+export type EdgeType = "default" | "step" | "straight" | "smoothstep"
 export default function MainLayout() {
   const { Header, Content, Footer, Aside } = Layout
-
   return (
     <div >
       <Layout>
@@ -426,11 +488,15 @@ export default function MainLayout() {
           {/*</Aside>*/}
 
           <Layout>
-            <Content  style={{ height: "calc(100vh - 64px)", overflow: "auto" }}>
+            <Content style={{height: "calc(100vh - 58px)", overflow: "auto"}}>
 
-              <ReactFlowProvider>
-                <ReactFlowApp />
-              </ReactFlowProvider>
+
+              <div className="w-full h-full flex">
+                <CollapsibleTabler/>
+                <div className="flex-1 relative">
+                  <ReactFlowProvider><ReactFlowApp/></ReactFlowProvider>
+                </div>
+              </div>
 
 
             </Content>

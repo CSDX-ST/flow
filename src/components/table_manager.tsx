@@ -24,12 +24,12 @@ export function CollapsibleTabler({ children, defaultCollapsed = true, width = "
       {/* Toggle Button */}
       {isCollapsed ?
         <Button
-            variant="ghost"
+            variant="default"
             size="sm"
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="absolute -right-14 top-4 z-10 border border-border bg-background p-0 shadow-sm hover:bg-accent rounded-md w-10 h-10"
+            className="absolute -right-14 top-4 z-10 p-0 shadow-sm hover:bg-gray-100 rounded-md w-10 h-10 bg-gray-50"
           >
-            {isCollapsed ? <ChevronRight className="w-6 h-6" /> : <ChevronLeft className="h-6 w-6" />}
+            {isCollapsed ? <ChevronRight className="w-10 h-10" /> : <ChevronLeft className="w-10 h-10" />}
           </Button>
           :null
         }
@@ -43,10 +43,10 @@ export function CollapsibleTabler({ children, defaultCollapsed = true, width = "
       >
         {isCollapsed ?
           null:<Button
-            variant="ghost"
+            variant="default"
             size="sm"
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="absolute right-2 top-4 z-10 border border-border bg-background p-0 shadow-sm hover:bg-accent rounded-md w-10 h-10"
+            className="absolute right-2 top-4 z-10 p-0 shadow-sm hover:shadow-md hover:bg-gray-100 rounded-md w-10 h-10 bg-white"
           >
             {isCollapsed ? <ChevronRight className="w-6 h-6" /> : <ChevronLeft className="h-6 w-6" />}
           </Button>
