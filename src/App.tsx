@@ -457,8 +457,8 @@ function HeaderMenu() {
         </div>
       }
     >
-      <MenuItem value="item1">已选内容</MenuItem>
-      <MenuItem value="item2">应用方案</MenuItem>
+      <MenuItem value="item1">Flow画布</MenuItem>
+      <MenuItem value="item2">图纸编辑</MenuItem>
       <MenuItem value="item3">模板库</MenuItem>
       <MenuItem value="item4" disabled>
         关于我们

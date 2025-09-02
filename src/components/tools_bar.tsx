@@ -98,7 +98,7 @@ export const ReactFlowTools = ({
     <TooltipProvider>
       <Panel position="bottom-center" className="flex items-center gap-2 bg-white rounded-lg p-1 shadow-lg mb-6! border border-gray-400/60 z-10!">
 
-        <Separator orientation="vertical" className="h-6" />
+        <Separator orientation="vertical" className="h-6 w-0!" />
         {/*切换模式*/}
         <Tooltip>
           <TooltipTrigger asChild>
@@ -114,7 +114,7 @@ export const ReactFlowTools = ({
           </TooltipTrigger>
         </Tooltip>
 
-        <Separator orientation="vertical" className="h-6" />
+        <Separator orientation="vertical" className="h-4! bg-gray-500/40" />
 
         <Tooltip>
           <TooltipTrigger asChild>
@@ -144,7 +144,7 @@ export const ReactFlowTools = ({
           </TooltipTrigger>
         </Tooltip>
 
-        <Separator orientation="vertical" className="h-6" />
+        <Separator orientation="vertical" className="h-4! bg-gray-500/40" />
 
         {/*切换连线类型*/}
         <Tooltip>
