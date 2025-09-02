@@ -85,6 +85,15 @@ export const ReactFlowTools = ({
     }
   }, [onRedo, canRedo])
 
+  const minimapStyle = {
+    backgroundColor: "rgba(248, 250, 252, 0.95)", // 半透明背景
+    border: "2px solid #e2e8f0", // 边框颜色和宽度
+    borderRadius: "12px", // 容器圆角
+    backdropFilter: "blur(12px)", // 背景模糊效果
+    // boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)", // 阴影效果
+    padding: "4px", // 内边距
+
+  }
   return (
     <TooltipProvider>
       <Panel position="bottom-center" className="flex items-center gap-2 bg-white rounded-lg p-1 shadow-lg mb-6! border border-gray-400/60 z-10!">
@@ -219,9 +228,20 @@ export const ReactFlowTools = ({
         )}
       </Panel>
 
-      {minimapVisible && <MiniMap position="bottom-right" className="bg-background rounded shadow-lg " />}
+      {minimapVisible && <MiniMap
+          nodeBorderRadius={100}
+          bgColor="#66ccff"
+          position="bottom-left"
+          pannable={true}
+          zoomable={true}
+          className=" backdrop-blur-sm rounded-lg shadow-sm"
+          maskColor="rgba(148, 163, 184, 0)" // 遮罩颜色
+          maskStrokeColor="#90b6f5" // 遮罩边框颜色
+          maskStrokeWidth={1} // 遮罩边框宽度
+          style={minimapStyle}
+      />}
 
-      {backgroundVisible && <Background id="1" gap={12} size={1} bgColor="#f0f0f3" />}
+      {backgroundVisible && <Background id="1" gap={12} size={1} bgColor="#f0f0f3"  />}
     </TooltipProvider>
   )
 }
