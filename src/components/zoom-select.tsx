@@ -59,11 +59,11 @@ export const ZoomSelect = ({ className = "", maxZoom = 2, minZoom = 0.25 }: Zoom
           className={`
             flex items-center justify-between
             px-3 py-2 w-20
-            bg-white border border-gray-200 rounded-lg
+            bg-white border border-gray-900 rounded-lg
             text-sm font-medium text-gray-700
-            hover:bg-gray-50 hover:border-gray-300
+            hover:bg-gray-100 hover:border-gray-300
             focus:outline-none focus:ring-1 focus:ring-blue-400 focus:ring-offset-1
-            shadow-sm cursor-pointer
+            cursor-pointer
             
             ${className}
           `}
@@ -73,7 +73,7 @@ export const ZoomSelect = ({ className = "", maxZoom = 2, minZoom = 0.25 }: Zoom
         </button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="center" className="w-40 bg-white border-0 ">
+      <DropdownMenuContent align="center" className="w-40 bg-white border-0 transition-all duration-300">
         <DropdownMenuItem onClick={handleZoomIn} className="flex items-center gap-2 hover:bg-gray-100">
           <ZoomIn className="h-4 w-4" />
           Zoom In

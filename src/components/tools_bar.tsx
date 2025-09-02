@@ -165,8 +165,10 @@ export const ReactFlowTools = ({
 
         <Separator orientation="vertical" className="h-6" />
 
-        <ZoomSelect className="h-8" />
-{/*只读：未做*/}
+{/*缩放显示*/}
+        <ZoomSelect className="h-8 " />
+
+
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -174,7 +176,7 @@ export const ReactFlowTools = ({
               size="sm"
               onClick={handleFitView}
               disabled={readonly}
-              className="h-8 w-8 p-0 flex-shrink-0 bg-transparent"
+              className="h-8 w-8 p-0 flex-shrink-0 bg-transparent hover:bg-gray-100 focus:outline-none"
             >
               <Maximize className="h-4 w-4" />
             </Button>
@@ -188,7 +190,7 @@ export const ReactFlowTools = ({
               variant="ghost"
               size="sm"
               onClick={() => setMinimapVisible(!minimapVisible)}
-              className="h-8 w-8 p-0 flex-shrink-0 hover:bg-gray-100 focus:outline-none"
+              className="h-8 w-8 p-0 flex-shrink-0 hover:bg-gray-100 focus:outline-none "
             >
               <Map className="h-4 w-4" />
             </Button>
@@ -219,7 +221,8 @@ export const ReactFlowTools = ({
                 size="sm"
                 onClick={onAddNode}
                 disabled={readonly}
-                className="h-8 w-8 p-0 flex-shrink-0 bg-transparent"
+                className="h-8 w-8 p-0 flex-shrink-0 bg-transparent custom-minimap"
+
               >
                 <Plus className="h-4 w-4" />
               </Button>
