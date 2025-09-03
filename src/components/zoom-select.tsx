@@ -58,8 +58,8 @@ export const ZoomSelect = ({ className = "", maxZoom = 2, minZoom = 0.25 }: Zoom
         <button
           className={`
             flex items-center justify-between
-            px-3 py-2 w-20
-            bg-white border border-gray-900 rounded-lg
+            px-2! py-2 w-16 
+            bg-white border! border-gray-400/50! rounded-lg
             text-sm font-medium text-gray-700
             hover:bg-gray-100 hover:border-gray-300
             focus:outline-none focus:ring-1 focus:ring-blue-400 focus:ring-offset-1
@@ -69,7 +69,7 @@ export const ZoomSelect = ({ className = "", maxZoom = 2, minZoom = 0.25 }: Zoom
           `}
         >
           <span>{Math.floor(currentZoom * 100)}%</span>
-          <ChevronUp className={`ml-1 h-3 w-3 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+          {/*<ChevronUp className={`ml-1 h-3 w-3 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />*/}
         </button>
       </DropdownMenuTrigger>
 

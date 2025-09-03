@@ -61,18 +61,6 @@ export const ReactFlowTools = ({
     fitView({ padding: 0.1 })
   }, [fitView])
 
-  const toggleInteractionMode = useCallback(() => {
-    const newMode = interactionMode === "selection" ? "pan" : "selection"
-    setInteractionMode(newMode)
-
-    store.setState({
-      nodesDraggable: newMode === "selection",
-      nodesConnectable: newMode === "selection",
-      elementsSelectable: newMode === "selection",
-      panOnDrag: newMode === "pan",
-    })
-  }, [interactionMode, store])
-
   const handleUndo = useCallback(() => {
     if (onUndo && canUndo) {
       onUndo()
@@ -85,6 +73,18 @@ export const ReactFlowTools = ({
     }
   }, [onRedo, canRedo])
 
+  const toggleInteractionMode = useCallback(() => {
+    const newMode = interactionMode === "selection" ? "pan" : "selection"
+    setInteractionMode(newMode)
+
+    store.setState({
+      nodesDraggable: newMode === "selection",
+      nodesConnectable: newMode === "selection",
+      elementsSelectable: newMode === "selection",
+      panOnDrag: newMode === "pan",
+    })
+  }, [interactionMode, store])
+
   const minimapStyle = {
     backgroundColor: "rgba(248, 250, 252, 0.95)", // 半透明背景
     border: "2px solid #e2e8f0", // 边框颜色和宽度
@@ -96,7 +96,7 @@ export const ReactFlowTools = ({
   }
   return (
     <TooltipProvider>
-      <Panel position="bottom-center" className="flex items-center gap-2 bg-white rounded-lg p-1 shadow-lg mb-6! border border-gray-400/60 z-10!">
+      <Panel position="bottom-center" className="flex items-center gap-1 bg-white rounded-lg p-1 shadow-lg mb-6! border border-gray-400/60 z-10!">
 
         <Separator orientation="vertical" className="h-6 w-0!" />
         {/*切换模式*/}
@@ -115,7 +115,8 @@ export const ReactFlowTools = ({
         </Tooltip>
 
         <Separator orientation="vertical" className="h-4! bg-gray-500/40" />
-
+        <Separator orientation="vertical" className="h-4 bg-gray-500/40" />
+{/*Undo*/}
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -123,13 +124,14 @@ export const ReactFlowTools = ({
               size="sm"
               onClick={handleUndo}
               disabled={readonly || !canUndo}
-              className="h-8 w-8 p-0 flex-shrink-0 bg-transparent"
+              className="h-8 w-8  flex-shrink-0 bg-transparent p-0"
             >
               <Undo className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
         </Tooltip>
 
+{/*Redo*/}
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -137,14 +139,14 @@ export const ReactFlowTools = ({
               size="sm"
               onClick={handleRedo}
               disabled={readonly || !canRedo}
-              className="h-8 w-8 p-0 flex-shrink-0 bg-transparent"
+              className="h-8 w-8 flex-shrink-0 bg-transparent p-0"
             >
               <Redo className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
         </Tooltip>
 
-        <Separator orientation="vertical" className="h-4! bg-gray-500/40" />
+        <Separator orientation="vertical" className="h-4 bg-gray-500/40" />
 
         {/*切换连线类型*/}
         <Tooltip>
@@ -154,7 +156,7 @@ export const ReactFlowTools = ({
               size="sm"
               onClick={handleEdgeTypeChange}
               disabled={readonly}
-              className="h-8 px-3 flex items-center gap-1 flex-shrink-0 hover:bg-gray-100 focus:outline-none"
+              className="h-8 px-3! flex items-center gap-1 flex-shrink-0 hover:bg-gray-100 focus:outline-none"
             >
               <Workflow className="h-4 w-4" />
               <span className="text-xs font-medium">{edgeTypeNames[edgeType]}</span>

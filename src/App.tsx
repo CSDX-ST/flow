@@ -68,6 +68,7 @@ import { ResourceMonitor } from "./components/resource-monitor"
 import NodeManager from './components/node_manager'
 import { ReactFlowTools } from "@/components/tools_bar"
 
+import { useUndoRedoManager } from "@/lib/undo-redo-manager"
 import Logo from './assets/flow.svg';
 // ==================== 配置常量 Configuration Constants ====================
 
@@ -169,6 +170,7 @@ function ReactFlowApp() {
   // 初始化UI控制状态
   const [showNodeManager, setShowNodeManager] = useState(true)
   const [showResourceMonitor, setShowResourceMonitor] = useState(false)
+  const {debouncedSaveState, undo, redo, canUndo, canRedo } = useUndoRedoManager(initialNodes, initialEdges)
 
   // 4. 初始化统计数据
   const [calculationStats, setCalculationStats] = useState({
@@ -181,6 +183,56 @@ function ReactFlowApp() {
   const edgeReconnectSuccessful = useRef(true)
 
   // ==================== 事件处理函数 Event Handlers ====================
+
+  /**
+   * 处理节点变化事件
+   * 当节点位置、大小或其他属性发生变化时触发
+   * 同时保存状态到历史记录中以支持撤销重做
+   */
+  const handleNodesChange = useCallback(
+    (changes: any) => {
+      onNodesChange(changes)
+      debouncedSaveState(nodes, edges)
+    },
+    [onNodesChange, debouncedSaveState, nodes, edges],
+  )
+
+  /**
+   * 处理边变化事件
+   * 当边被删除、修改或其他属性变化时触发
+   * 同时保存状态到历史记录中以支持撤销重做
+   */
+  const handleEdgesChange = useCallback(
+    (changes: any) => {
+      onEdgesChange(changes)
+      debouncedSaveState(nodes, edges)
+    },
+    [onEdgesChange, debouncedSaveState, nodes, edges],
+  )
+  /**
+   * 执行撤销操作
+   * 恢复到上一个历史状态
+   */
+  const handleUndo = useCallback(() => {
+    const previousState = undo()
+    if (previousState) {
+      setNodes(previousState.nodes)
+      setEdges(previousState.edges)
+    }
+  }, [undo, setNodes, setEdges])
+
+  /**
+   * 执行重做操作
+   * 前进到下一个历史状态
+   */
+  const handleRedo = useCallback(() => {
+    const nextState = redo()
+    if (nextState) {
+      setNodes(nextState.nodes)
+      setEdges(nextState.edges)
+    }
+  }, [redo, setNodes, setEdges])
+
   const handleEdgeTypeChange = useCallback(
     (newType: EdgeType) => {
       setEdgeType(newType)
@@ -301,6 +353,7 @@ function ReactFlowApp() {
           filteredEdges,
         )
       })
+
     },
     [setEdges],
   )
@@ -411,8 +464,8 @@ function ReactFlowApp() {
          edges={edges}
          nodeTypes={nodeTypes}
          edgeTypes={EdgeType}
-         onNodesChange={onNodesChange}
-         onEdgesChange={onEdgesChange}
+         onNodesChange={handleNodesChange}
+         onEdgesChange={handleEdgesChange}
          onConnect={handleConnect}
          onConnectEnd={handleConnectEnd}
          onReconnect={handleReconnect}
@@ -430,8 +483,13 @@ function ReactFlowApp() {
 
         {/*<CollapsibleMinimap />*/}
         {/*<Controls  orientation="horizontal" />*/}
-        <ReactFlowTools />
-        <ResourceMonitor />
+        <ReactFlowTools/>
+        <ResourceMonitor
+            onUndo={handleUndo}
+            onRedo={handleRedo}
+            canUndo={canUndo}
+            canRedo={canRedo}
+        />
         {selectedNode && <XYAxisControl selectedNode={selectedNode} updateNodePosition={updateNodePosition}/>}
       </ReactFlow>
     </div>
