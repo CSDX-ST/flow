@@ -21,11 +21,8 @@ import "./App.css"
 import "@xyflow/react/dist/style.css"
 import {
   addEdge,
-  Background,
   ConnectionLineType,
-  Controls,
   type EdgeTypes,
-  MiniMap,
   ReactFlow,
   reconnectEdge,
   useEdgesState,
@@ -63,13 +60,15 @@ import basicArrowEdge from "./components/CustomEdges/basicArrowEdge"
 import { XYAxisControl } from "./features/xy-axis-control"
 
 import { CollapsibleTabler } from "@/components/table_manager"
-import { CollapsibleMinimap } from "@/components/collapsible-minimap"
+// import { CollapsibleMinimap } from "@/components/collapsible-minimap"
 import { ResourceMonitor } from "./components/resource-monitor"
 import NodeManager from './components/node_manager'
 import { ReactFlowTools } from "@/components/tools_bar"
 
 import { useUndoRedoManager } from "@/lib/undo-redo-manager"
 import Logo from './assets/flow.svg';
+
+
 // ==================== 配置常量 Configuration Constants ====================
 
 const EdgeType: EdgeTypes = {
@@ -157,7 +156,6 @@ function SidebarMenu() {
 
 /**
  * ReactFlow 主应用组件
- * Main ReactFlow Application Component
  */
 function ReactFlowApp() {
   // 状态管理 State Management
@@ -483,13 +481,14 @@ function ReactFlowApp() {
 
         {/*<CollapsibleMinimap />*/}
         {/*<Controls  orientation="horizontal" />*/}
-        <ReactFlowTools/>
-        <ResourceMonitor
+        <ReactFlowTools
             onUndo={handleUndo}
             onRedo={handleRedo}
             canUndo={canUndo}
             canRedo={canRedo}
+
         />
+        <ResourceMonitor/>
         {selectedNode && <XYAxisControl selectedNode={selectedNode} updateNodePosition={updateNodePosition}/>}
       </ReactFlow>
     </div>

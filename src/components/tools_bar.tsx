@@ -159,7 +159,7 @@ export const ReactFlowTools = ({
               className="h-8 px-3! flex items-center gap-1 flex-shrink-0 hover:bg-gray-100 focus:outline-none"
             >
               <Workflow className="h-4 w-4" />
-              <span className="text-xs font-medium">{edgeTypeNames[edgeType]}</span>
+              <span className="text-xs font-medium select-none">{edgeTypeNames[edgeType]}</span>
             </Button>
           </TooltipTrigger>
           {/*<TooltipContent>切换连线类型</TooltipContent>*/}
@@ -168,7 +168,7 @@ export const ReactFlowTools = ({
         <Separator orientation="vertical" className="h-6" />
 
 {/*缩放显示*/}
-        <ZoomSelect className="h-8 " />
+        <ZoomSelect className="h-8 select-none" />
 
 
         <Tooltip>
