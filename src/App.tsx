@@ -32,6 +32,7 @@ import {
   MarkerType,
   type Node,
   type Connection,
+  SmoothStepEdge
 } from "@xyflow/react"
 
 // TDesign UI imports
@@ -73,11 +74,8 @@ import Logo from './assets/flow.svg';
 
 const EdgeType: EdgeTypes = {
   default: basicArrowEdge,
-  straight: basicArrowEdge,
-  smoothstep: basicArrowEdge,
-  step: basicArrowEdge,
-  buttonedge: basicArrowEdge,
   arrowedge: basicArrowEdge,
+  smoothstep: SmoothStepEdge,
 }
 
 const BACKGROUND_SETTINGS = {
@@ -344,14 +342,14 @@ function ReactFlowApp() {
         return addEdge(
           {
             ...newConnection,
-            type: "arrowedge",
+            type: edgeType,
             markerEnd: MARKER_END_CONFIG,
             style: EDGE_STYLE,
           },
           filteredEdges,
         )
       })
-
+// console.log('新添加的边:', updatedEdges.find(e => e.id === newConnection.id));
     },
     [setEdges],
   )
@@ -486,6 +484,7 @@ function ReactFlowApp() {
             onRedo={handleRedo}
             canUndo={canUndo}
             canRedo={canRedo}
+            onEdgeTypeChange={handleEdgeTypeChange}
 
         />
         <ResourceMonitor/>
