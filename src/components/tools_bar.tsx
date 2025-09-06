@@ -1,12 +1,14 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import { useReactFlow, useStoreApi, Panel, MiniMap, Background } from "@xyflow/react"
+import {useReactFlow, useStoreApi, Panel, MiniMap, Background, type EdgeTypes, SmoothStepEdge} from "@xyflow/react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Maximize, Map, Grid3X3, MousePointer, Move, Plus, Undo, Redo, Workflow } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { ZoomSelect } from "@/components/zoom-select"
+import basicArrowEdge from "../components/CustomEdges/basicArrowEdge"
+import flowArrowEdge from "../components/CustomEdges/flowArrowEdge"
 
 interface ReactFlowToolsProps {
   onAddNode?: () => void
@@ -18,13 +20,18 @@ interface ReactFlowToolsProps {
   onEdgeTypeChange?: (edgeType: EdgeType) => void
 }
 
-export type EdgeType = "default" | "step" | "straight" | "smoothstep"
-
+export type EdgeType = "default" | "step" | "straight" | "smoothstep" | "basicArrowEdge" | "flowArrowEdge"
+export const edgeTypes: EdgeTypes = {
+  basicArrowEdge: basicArrowEdge,
+  flowArrowEdge: flowArrowEdge,
+}
 const edgeTypeNames: Record<EdgeType, string> = {
   default: "贝塞尔",
   step: "阶梯",
   straight: "直线",
   smoothstep: "平滑阶梯",
+  basicArrowEdge:"箭线",
+  flowArrowEdge:"flow箭线",
 }
 
 export const ReactFlowTools = ({
@@ -46,14 +53,16 @@ export const ReactFlowTools = ({
 
   const handleEdgeTypeChange = useCallback(() => {
 
-    const edgeTypes: EdgeType[] = ["default", "step", "straight", "smoothstep"]
+    const edgeTypes: EdgeType[] = ["default", "step", "straight", "smoothstep", "basicArrowEdge", "flowArrowEdge"]
     const currentIndex = edgeTypes.indexOf(edgeType)
     const nextIndex = (currentIndex + 1) % edgeTypes.length
     const newType = edgeTypes[nextIndex]
 
     setEdgeType(newType)
+
     if (onEdgeTypeChange) {
       onEdgeTypeChange(newType)
+
     }
   }, [edgeType, onEdgeTypeChange])
 
@@ -244,6 +253,7 @@ export const ReactFlowTools = ({
           maskStrokeColor="#90b6f5" // 遮罩边框颜色
           maskStrokeWidth={1} // 遮罩边框宽度
           style={minimapStyle}
+
       />}
 
       {backgroundVisible && <Background id="1" gap={12} size={1} bgColor="#f0f0f3"  />}

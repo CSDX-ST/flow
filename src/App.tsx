@@ -14,7 +14,7 @@
  */
 
 import type React from "react"
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useRef, useState, useEffect} from "react"
 import "./App.css"
 
 // ReactFlow imports
@@ -64,7 +64,7 @@ import { CollapsibleTabler } from "@/components/table_manager"
 // import { CollapsibleMinimap } from "@/components/collapsible-minimap"
 import { ResourceMonitor } from "./components/resource-monitor"
 import NodeManager from './components/node_manager'
-import { ReactFlowTools } from "@/components/tools_bar"
+import { ReactFlowTools ,edgeTypes, type EdgeType } from "@/components/tools_bar"
 
 import { useUndoRedoManager } from "@/lib/undo-redo-manager"
 import Logo from './assets/flow.svg';
@@ -72,11 +72,11 @@ import Logo from './assets/flow.svg';
 
 // ==================== 配置常量 Configuration Constants ====================
 
-const EdgeType: EdgeTypes = {
-  default: basicArrowEdge,
-  arrowedge: basicArrowEdge,
-  smoothstep: SmoothStepEdge,
-}
+// const EdgeType: EdgeTypes = {
+//   default: basicArrowEdge,
+//   arrowedge: basicArrowEdge,
+//   smoothstep: SmoothStepEdge,
+// }
 
 const BACKGROUND_SETTINGS = {
   gap: 50,
@@ -162,6 +162,10 @@ function ReactFlowApp() {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
   const [selectedNode, setSelectedNode] = useState<Node | null>(null)
   const [edgeType, setEdgeType] = useState<EdgeType>("default")
+   useEffect(() => {
+    console.log("[v0] edgeType updated to:", edgeType)
+  }, [edgeType])
+
   // 节点管理器显示控制
   // 初始化UI控制状态
   const [showNodeManager, setShowNodeManager] = useState(true)
@@ -229,9 +233,12 @@ function ReactFlowApp() {
     }
   }, [redo, setNodes, setEdges])
 
+
+// switch line type
   const handleEdgeTypeChange = useCallback(
     (newType: EdgeType) => {
       setEdgeType(newType)
+      // console.log("EdgeType:", newType,  edgeType)
       // Update all existing edges to use the new type
       setEdges((eds) =>
         eds.map((edge) => ({
@@ -346,12 +353,23 @@ function ReactFlowApp() {
             markerEnd: MARKER_END_CONFIG,
             style: EDGE_STYLE,
           },
+
           filteredEdges,
         )
       })
 // console.log('新添加的边:', updatedEdges.find(e => e.id === newConnection.id));
     },
-    [setEdges],
+    [edgeType, setEdges],
+  )
+// 备用onConnect
+  const onConnect = useCallback(
+    (params: Connection) => {
+      const newEdge = { ...params, type:  edgeType,            markerEnd: MARKER_END_CONFIG,
+            style: EDGE_STYLE, }
+      setEdges((eds) => addEdge(newEdge, eds))
+
+    },
+    [edgeType, setEdges, nodes, edges],
   )
 
   /**
@@ -459,7 +477,7 @@ function ReactFlowApp() {
          nodes={nodes}
          edges={edges}
          nodeTypes={nodeTypes}
-         edgeTypes={EdgeType}
+         edgeTypes={edgeTypes}
          onNodesChange={handleNodesChange}
          onEdgesChange={handleEdgesChange}
          onConnect={handleConnect}
@@ -527,7 +545,7 @@ function HeaderMenu() {
  * 主布局组件
  * Main Layout Component
  */
-export type EdgeType = "default" | "step" | "straight" | "smoothstep"
+
 export default function MainLayout() {
   const { Header, Content, Footer, Aside } = Layout
   return (
