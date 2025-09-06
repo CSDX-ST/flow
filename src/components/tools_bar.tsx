@@ -31,7 +31,7 @@ const edgeTypeNames: Record<EdgeType, string> = {
   straight: "直线",
   smoothstep: "平滑阶梯",
   basicArrowEdge:"箭线",
-  flowArrowEdge:"flow箭线",
+  flowArrowEdge:"虚箭线",
 }
 
 export const ReactFlowTools = ({
@@ -49,7 +49,7 @@ export const ReactFlowTools = ({
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [backgroundVisible, setBackgroundVisible] = useState(true)
   const [interactionMode, setInteractionMode] = useState<"selection" | "pan">("selection")
-  const [edgeType, setEdgeType] = useState<EdgeType>("default")
+  const [edgeType, setEdgeType] = useState<EdgeType>("basicArrowEdge")
 
   const handleEdgeTypeChange = useCallback(() => {
 

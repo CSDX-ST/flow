@@ -1,8 +1,8 @@
 import React from 'react';
 import {
-  BaseEdge,
-  useInternalNode,
-  type EdgeProps,
+    BaseEdge,
+    useInternalNode,
+    type EdgeProps, MarkerType,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
@@ -91,8 +91,14 @@ export default function CustomEdge({
     targetY,
     nodeRadius,
   });
-
+  const customMarkerEnd = {
+    type: MarkerType.ArrowClosed,
+    width: 30,
+    height: 30,
+    color: "#FF0072",
+  };
   return <BaseEdge path={path}
                    markerEnd={markerEnd}
-                   style={{...style,strokeDasharray: "8,6",}}/>;
+                   style={{...style,stroke: "#0059ff",strokeDasharray: "8,6",}}/>;
 }
+

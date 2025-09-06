@@ -161,7 +161,7 @@ function ReactFlowApp() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
   const [selectedNode, setSelectedNode] = useState<Node | null>(null)
-  const [edgeType, setEdgeType] = useState<EdgeType>("default")
+  const [edgeType, setEdgeType] = useState<EdgeType>("basicArrowEdge")
    useEffect(() => {
     console.log("[v0] edgeType updated to:", edgeType)
   }, [edgeType])
@@ -397,6 +397,7 @@ function ReactFlowApp() {
             id,
             source: connectionState.fromNode.id,
             target: id,
+            type: edgeType,
             sourceHandle: connectionState.fromHandle.id,
             markerEnd: MARKER_END_CONFIG,
             style: EDGE_STYLE,
@@ -404,7 +405,7 @@ function ReactFlowApp() {
         )
       }
     },
-    [screenToFlowPosition, setNodes, setEdges],
+    [screenToFlowPosition, setNodes, setEdges, edgeType],
   )
 
 // 没想好怎么写
