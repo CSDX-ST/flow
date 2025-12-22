@@ -87,9 +87,9 @@ export const ReactFlowTools = ({
     setInteractionMode(newMode)
 
     store.setState({
-      nodesDraggable: newMode === "selection",
-      nodesConnectable: newMode === "selection",
       elementsSelectable: newMode === "selection",
+      nodesConnectable: newMode === "selection",
+      nodesDraggable: newMode === "selection",
       panOnDrag: newMode === "pan",
     })
   }, [interactionMode, store])
@@ -103,6 +103,7 @@ export const ReactFlowTools = ({
     padding: "4px", // 内边距
 
   }
+  // @ts-ignore
   return (
     <TooltipProvider>
       <Panel position="bottom-center" className="flex items-center gap-1 bg-white rounded-lg p-1 shadow-lg mb-6! border border-gray-400/60 z-10!">
@@ -245,9 +246,9 @@ export const ReactFlowTools = ({
       {minimapVisible && <MiniMap
           nodeBorderRadius={100}
           bgColor="#66ccff"
-          position="bottom-left"
+          position="bottom-right"
           pannable={true}
-          zoomable={true}
+          zoomable={false}
           className=" backdrop-blur-sm rounded-lg shadow-sm"
           maskColor="rgba(148, 163, 184, 0)" // 遮罩颜色
           maskStrokeColor="#90b6f5" // 遮罩边框颜色

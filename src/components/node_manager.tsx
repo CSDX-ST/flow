@@ -38,6 +38,7 @@ export default function NodeManager({ nodes, onAddNode, onDeleteNode, onRenameNo
   // 管理节点列表是否折叠的状态
   const [isCollapsed, setIsCollapsed] = useState(false)
 
+  // console.log(nodes.length,typeof nodes)
   const handleAddNode = (type: string) => {
     // 随机位置添加节点
     const position = {
@@ -146,6 +147,7 @@ export default function NodeManager({ nodes, onAddNode, onDeleteNode, onRenameNo
           <div>
             {/*<div className="text-xs font-medium text-gray-700 mb-2">现有节点 ({nodes.length})</div>*/}
             <div className="space-y-1 max-h-82 ">
+
               {nodes.map((node) => (
                 <div key={node.id} className="flex items-center justify-between p-2 bg-gray-50 rounded text-xs">
                   <div className="flex items-center space-x-2 flex-1">

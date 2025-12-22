@@ -1,10 +1,18 @@
 import React from 'react';
 import { NodeProps, Handle, Position } from '@xyflow/react';
+import type {TableProps} from "tdesign-react";
+
+interface CustomNodeData {
+  // 单个字符串属性
+  label: number;
+
+}
 
 
 // 自定义圆形节点组件
 export const CircleNode = ({ data, selected }: NodeProps) => {
-  return (
+
+    return (
     <div
       style={{
         width: '60px',
