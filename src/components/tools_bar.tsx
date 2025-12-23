@@ -9,6 +9,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { ZoomSelect } from "@/components/zoom-select"
 import basicArrowEdge from "../components/CustomEdges/basicArrowEdge"
 import flowArrowEdge from "../components/CustomEdges/flowArrowEdge"
+import simpleStraight from "../components/CustomEdges/simple_straight"
 
 interface ReactFlowToolsProps {
   onAddNode?: () => void
@@ -20,10 +21,11 @@ interface ReactFlowToolsProps {
   onEdgeTypeChange?: (edgeType: EdgeType) => void
 }
 
-export type EdgeType = "default" | "step" | "straight" | "smoothstep" | "basicArrowEdge" | "flowArrowEdge"
+export type EdgeType = "default" | "step" | "straight" | "smoothstep" | "basicArrowEdge" | "flowArrowEdge" |"simpleStraight"
 export const edgeTypes: EdgeTypes = {
   basicArrowEdge: basicArrowEdge,
   flowArrowEdge: flowArrowEdge,
+  simpleStraight: simpleStraight,
 }
 const edgeTypeNames: Record<EdgeType, string> = {
   default: "贝塞尔",
@@ -32,6 +34,7 @@ const edgeTypeNames: Record<EdgeType, string> = {
   smoothstep: "平滑阶梯",
   basicArrowEdge:"箭线",
   flowArrowEdge:"虚箭线",
+  simpleStraight:"简单直线"
 }
 
 export const ReactFlowTools = ({
@@ -53,7 +56,7 @@ export const ReactFlowTools = ({
 
   const handleEdgeTypeChange = useCallback(() => {
 
-    const edgeTypes: EdgeType[] = ["default", "step", "straight", "smoothstep", "basicArrowEdge", "flowArrowEdge"]
+    const edgeTypes: EdgeType[] = ["default", "step", "straight", "smoothstep", "basicArrowEdge", "flowArrowEdge","simpleStraight"]
     const currentIndex = edgeTypes.indexOf(edgeType)
     const nextIndex = (currentIndex + 1) % edgeTypes.length
     const newType = edgeTypes[nextIndex]

@@ -24,24 +24,10 @@ interface CollapsibleSidebarProps {
 
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
-const data: TableProps['data'] = [];
-const total = 28;
+
 
 type SizeEnum = 'small' | 'medium' | 'large';
-for (let i = 0; i < total; i++) {
-  data.push({
-    index: i + 1,
-    applicant: ['贾明', '张三', '王芳'][i % 3],
-    status: i % 3,
-    channel: ['电子签署', '纸质签署', '纸质签署'][i % 3],
-    detail: {
-      email: ['w.cezkdudy@lhll.au', 'r.nmgw@peurezgn.sl', 'p.cumx@rampblpa.ru'][i % 3],
-    },
-    matters: ['宣传物料制作费用', 'algolia 服务报销', '相关周边制作费', '激励奖品快递费'][i % 4],
-    time: [2, 3, 1, 4][i % 4],
-    createTime: ['2022-01-01', '2022-02-01', '2022-03-01', '2022-04-01', '2022-05-01'][i % 4],
-  });
-}
+
 
 const classStyles = `
 <style>
@@ -103,7 +89,6 @@ export function CollapsibleTabler({ children, defaultCollapsed = true, width = "
   const table = (
       <div style={{margin: '0px 0',height: '80vh',}}>
         <Table
-
             style={{ height: '100%' ,width:'485px'}}
           data={nodes}
 
@@ -112,7 +97,7 @@ export function CollapsibleTabler({ children, defaultCollapsed = true, width = "
             {colKey: 'type', title: '类型',className: () => 'classcustom-cell-class-name',thClassName:"custom-header-class"},
             {colKey: 'position.x', title: 'position.x', ellipsis: true,thClassName:"custom-header-class"},
             {colKey: 'position.y', title: 'position.y' ,thClassName:"custom-header-class"},
-            {colKey: 'position.y', title: '权值' ,thClassName:"custom-header-class"},
+            {colKey: 'data.label', title: '权值' ,thClassName:"custom-header-class"},
           ]}
 
           // columns={[

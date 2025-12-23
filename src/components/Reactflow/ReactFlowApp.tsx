@@ -12,6 +12,7 @@ import {
     useReactFlow,
     type Node,
     type Connection,
+    NodeToolbar
 } from "@xyflow/react";
 
 // 导入外部依赖
@@ -40,6 +41,9 @@ import { OperationLog} from "@/type/reactFlow";
 import {generateNodeId} from "@/utils/reactFlow";
 import {EdgeType} from "@/components/tools_bar";
 
+
+
+
 const ReactFlowApp = () => {
     // 状态管理
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -48,7 +52,7 @@ const ReactFlowApp = () => {
     const [edgeType, setEdgeType] = useState<EdgeType>("basicArrowEdge");
     const [showNodeManager, setShowNodeManager] = useState(true);
     const [operationLogs, setOperationLogs] = useState<OperationLog[]>([]);
-console.log(nodes)
+    // console.log(nodes)
     // 撤销重做
     const {debouncedSaveState, undo, redo, canUndo, canRedo} = useUndoRedoManager(initialNodes, initialEdges);
 
@@ -63,9 +67,9 @@ console.log(nodes)
     const edgeReconnectSuccessful = useRef(true);
 
     // 监听 edgeType 变化
-    useEffect(() => {
-        console.log("[v0] edgeType updated to:", edgeType);
-    }, [edgeType]);
+    // useEffect(() => {
+    //     console.log("[v0] edgeType updated to:", edgeType);
+    // }, [edgeType]);
 
     // ==================== 事件处理函数 ====================
     // 节点变化处理
@@ -123,7 +127,6 @@ console.log(nodes)
     // 节点重命名
     const renameNode = useCallback(
         (nodeId: string, newLabel: string) => {
-
 
 
             setNodes((nds) =>
@@ -230,8 +233,8 @@ console.log(nodes)
                 const newNode = {
                     id,
                     position: screenToFlowPosition({x: clientX, y: clientY}),
-                    type: "CircleNode",
-                    data: {label: `${id}`, value: "0"},
+                    type: "ActivityNode",
+                    data: {label: `${id}`, value: "0",assignee:'nothing',name:`${id}`,forceToolbarVisible:false},
                     origin: NODE_ORIGIN,
                 };
 
@@ -320,6 +323,7 @@ console.log(nodes)
                 onPaneClick={handlePaneClick}
                 onNodeClick={handleNodeClick}
             >
+
                 <TrianglesBackground {...BACKGROUND_SETTINGS} />
                 <ReactFlowTools
                     onUndo={handleUndo}

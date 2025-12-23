@@ -2,7 +2,9 @@
 
 import { useReactFlow } from "@xyflow/react"
 import { useCallback, useState,useMemo} from "react"
-import type { Node } from "@xyflow/react"
+import type { Node ,} from "@xyflow/react"
+import {useNodesState} from "@xyflow/react"
+import { useToolbarContext } from './ToolbarContext';
 
 import { Card, CardContent, CardTitle } from "./ui/card"
 import { Button } from "./ui/button"
@@ -10,6 +12,7 @@ import { Input } from "./ui/input"
 import { Badge } from "./ui/badge"
 import { Plus, Trash2, Edit3, X, ChevronDown, Settings, Focus} from "lucide-react"
 
+import initialNodes from "../components/Initial/initialNodes";
 interface NodeManagerProps {
   nodes: Node[]
   onAddNode: (type: string, position: { x: number; y: number }) => void
@@ -29,6 +32,7 @@ const nodeTypes = [
   { type: "output", label: "输出节点", color: "bg-orange-100 text-orange-800" },
 ]
 
+
 // 导出NodeManager组件
 export default function NodeManager({ nodes, onAddNode, onDeleteNode, onRenameNode }: NodeManagerProps) {
   // 管理当前正在编辑的节点ID
@@ -37,6 +41,7 @@ export default function NodeManager({ nodes, onAddNode, onDeleteNode, onRenameNo
   const [editLabel, setEditLabel] = useState("")
   // 管理节点列表是否折叠的状态
   const [isCollapsed, setIsCollapsed] = useState(false)
+
 
   // console.log(nodes.length,typeof nodes)
   const handleAddNode = (type: string) => {
@@ -102,6 +107,8 @@ export default function NodeManager({ nodes, onAddNode, onDeleteNode, onRenameNo
         return "bg-gray-100 text-gray-800"
     }
   }
+  const { isToolbarEnabled, setIsToolbarEnabled } = useToolbarContext();
+  // console.log('isToolbarEnabled: ',isToolbarEnabled)
 
   return (
     <Card className="absolute top-4 right-4 z-10 w-80 bg-white shadow-lg border-0 ">
@@ -115,8 +122,9 @@ export default function NodeManager({ nodes, onAddNode, onDeleteNode, onRenameNo
           节点面板
         </CardTitle>
         <div className="flex items-center gap-1">
+
           <span className="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded select-none">{nodes.length}</span>
-          <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isCollapsed ? "" : "rotate-180"}`} />
+          <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isCollapsed ? "" : "rotate-180"}`}/>
         </div>
       </div>
 
@@ -145,83 +153,89 @@ export default function NodeManager({ nodes, onAddNode, onDeleteNode, onRenameNo
 
           {/* 现有节点列表 */}
           <div>
+            <input
+                type="checkbox"
+                id="enableNodeToolbar"
+                checked={isToolbarEnabled}
+                onChange={(e) => setIsToolbarEnabled(e.target.checked)}
+            />
             {/*<div className="text-xs font-medium text-gray-700 mb-2">现有节点 ({nodes.length})</div>*/}
             <div className="space-y-1 max-h-82 ">
 
               {nodes.map((node) => (
-                <div key={node.id} className="flex items-center justify-between p-2 bg-gray-50 rounded text-xs">
-                  <div className="flex items-center space-x-2 flex-1">
-                    <Badge className={`text-xs select-none ${getNodeTypeColor(node.type!)}`}>
-                      {node.type === "inputNode"
-                        ? "输入"
-                        : node.type === "calculationNode"
-                          ? "计算"
-                          : node.type === "formulaNode"
-                            ? "公式"
-                            : "输出"}
-                    </Badge>
-                    {editingNode === node.id ? (
-                      <div className="flex items-center space-x-1 flex-1">
-                        <Input
-                          value={editLabel}
-                          onChange={(e) => setEditLabel(e.target.value)}
-                          className="h-6 text-xs nodrag"
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") saveEdit()
-                            if (e.key === "Escape") cancelEdit()
-                          }}
-                          autoFocus
-                        />
-                        <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={saveEdit}>
-                          ✓
-                        </Button>
-                        <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={cancelEdit}>
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    ) : (
-                      <span className="flex-1 truncate text-left pl-2">{node.data.label}</span>
+                  <div key={node.id} className="flex items-center justify-between p-2 bg-gray-50 rounded text-xs">
+                    <div className="flex items-center space-x-2 flex-1">
+                      <Badge className={`text-xs select-none ${getNodeTypeColor(node.type!)}`}>
+                        {node.type === "inputNode"
+                            ? "输入"
+                            : node.type === "calculationNode"
+                                ? "计算"
+                                : node.type === "formulaNode"
+                                    ? "公式"
+                                    : "输出"}
+                      </Badge>
+                      {editingNode === node.id ? (
+                          <div className="flex items-center space-x-1 flex-1">
+                            <Input
+                                value={editLabel}
+                                onChange={(e) => setEditLabel(e.target.value)}
+                                className="h-6 text-xs nodrag"
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") saveEdit()
+                                  if (e.key === "Escape") cancelEdit()
+                                }}
+                                autoFocus
+                            />
+                            <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={saveEdit}>
+                              ✓
+                            </Button>
+                            <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={cancelEdit}>
+                              <X className="h-3 w-3"/>
+                            </Button>
+                          </div>
+                      ) : (
+                          <span className="flex-1 truncate text-left pl-2">{node.data.label as string}</span>
+                      )}
+                    </div>
+                    {editingNode !== node.id && (
+                        <div className="flex items-center space-x-1 ">
+
+                          <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 p-0 hover:bg-gray-200/80! hover:text-blue-600 focus:ring-1 focus:ring-blue-400 focus:ring-op"
+                              onClick={() => focusNode(node.id)} title="定位">
+
+                            {/*<svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">*/}
+                            {/*  <path*/}
+                            {/*    strokeLinecap="round"*/}
+                            {/*    strokeLinejoin="round"*/}
+                            {/*    strokeWidth={2}*/}
+                            {/*    d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"*/}
+                            {/*  />*/}
+                            {/*</svg>*/}
+                            <Focus className="h-3 w-3 "/>
+                          </Button>
+
+                          <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 w-6 p-0 hover:text-blue-600 hover:bg-gray-200/80! hover:text-blue-600 focus:ring-1 focus:ring-blue-400 focus:ring-op"
+                              onClick={() => startEditing(node.id, node.data.label as string)}
+                          >
+                            <Edit3 className="h-3 w-3 "/>
+                          </Button>
+                          <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 w-6 p-0 text-red-500/60 hover:text-red-600/80 hover:bg-gray-200/80! focus:ring-1 focus:ring-blue-400 focus:ring-op"
+                              onClick={() => onDeleteNode(node.id)}
+                          >
+                            <Trash2 className="h-3 w-3"/>
+                          </Button>
+                        </div>
                     )}
                   </div>
-                  {editingNode !== node.id && (
-                    <div className="flex items-center space-x-1 ">
-
-                      <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 p-0 hover:bg-gray-200/80! hover:text-blue-600 focus:ring-1 focus:ring-blue-400 focus:ring-op"
-                          onClick={() => focusNode(node.id)} title="定位">
-
-                        {/*<svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">*/}
-                        {/*  <path*/}
-                        {/*    strokeLinecap="round"*/}
-                        {/*    strokeLinejoin="round"*/}
-                        {/*    strokeWidth={2}*/}
-                        {/*    d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"*/}
-                        {/*  />*/}
-                        {/*</svg>*/}
-                          <Focus className="h-3 w-3 " />
-                      </Button>
-
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-6 w-6 p-0 hover:text-blue-600 hover:bg-gray-200/80! hover:text-blue-600 focus:ring-1 focus:ring-blue-400 focus:ring-op"
-                        onClick={() => startEditing(node.id, node.data.label)}
-                      >
-                        <Edit3 className="h-3 w-3 " />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-6 w-6 p-0 text-red-500/60 hover:text-red-600/80 hover:bg-gray-200/80! focus:ring-1 focus:ring-blue-400 focus:ring-op"
-                        onClick={() => onDeleteNode(node.id)}
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  )}
-                </div>
               ))}
             </div>
           </div>

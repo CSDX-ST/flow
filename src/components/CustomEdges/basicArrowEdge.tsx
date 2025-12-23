@@ -80,7 +80,7 @@ export default function CustomEdge({
   // 获取源节点尺寸
   const sourceNode = useInternalNode(source);
   // 计算节点半径（考虑默认值）
-  const nodeRadius = ((sourceNode.measured?.width || 40) / 2) + 4;
+  const nodeRadius = ((sourceNode.measured?.width || 40) / 2) + 3;
   // console.log('sourceNode:', nodeRadius);
 
   // 生成路径数据

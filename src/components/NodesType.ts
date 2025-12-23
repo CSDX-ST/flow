@@ -3,6 +3,7 @@ import {BasicValueOutputNode, InputNode, OutputNode, TestMutilOutputNode,BasicOp
 import {DatabaseNode} from "./nodes/DatabaseNodetest";
 import {OutputNodesss} from "./nodes/OutputNode";
 import {CircleNode} from "./nodes/CircleNode";
+import ActivityNode from './nodes/ActivityNode';
 
 const nodeTypes = {
   inputNode: InputNode,
@@ -13,6 +14,7 @@ const nodeTypes = {
   BasicOperation:BasicOperation,
   outputNodesss:OutputNodesss,
   CircleNode:CircleNode,
+  ActivityNode:ActivityNode,
 };
 
 export default nodeTypes;
