@@ -296,6 +296,8 @@ const ReactFlowApp = () => {
         [nodes, setNodes, setEdges]
     );
 
+
+
     return (
         <div className="w-full h-full relative">
             {showNodeManager &&
