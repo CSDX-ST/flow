@@ -1,5 +1,5 @@
 import React from 'react';
-import { NodeProps, Handle, Position ,NodeToolbar } from '@xyflow/react';
+import { NodeProps, Handle, Position ,NodeToolbar,useReactFlow  } from '@xyflow/react';
 import type {TableProps} from "tdesign-react";
 import { useToolbarContext } from '../ToolbarContext';
 
@@ -43,7 +43,10 @@ const ActivityNode = ({ data ,selected }: { data: ActivityNodeData ,selected: bo
         freeFloat,
         isCritical = false,
         forceToolbarVisible = false
-    } = data, {isToolbarEnabled} = useToolbarContext();     // console.log('isToolbarEnabled',isToolbarEnabled)
+    } = data, {isToolbarEnabled} = useToolbarContext();
+
+
+
   return (
 
       <div
@@ -60,6 +63,7 @@ const ActivityNode = ({ data ,selected }: { data: ActivityNodeData ,selected: bo
               transition: 'all 0.2s ease',
               overflow: 'visible',
               position: 'relative',
+              cursor: 'pointer'
 
           }}
       >
@@ -121,15 +125,7 @@ const ActivityNode = ({ data ,selected }: { data: ActivityNodeData ,selected: bo
           }}>
               {data.label as string}
           </div>
-          {/*<div style={{textAlign: 'center', marginBottom: '4px'}}>*/}
-          {/*    <strong>{name}</strong>*/}
-          {/*</div>*/}
-          {/*<div style={{fontSize: '12px', lineHeight: '1.4'}}>*/}
-          {/*    <div>持续时间：{duration}</div>*/}
-          {/*    <div>ES：{es} | EF：{ef}</div>*/}
-          {/*    {ls && lf && <div>LS：{ls} | LF：{lf}</div>}*/}
-          {/*    {totalFloat && <div>总时差：{totalFloat}</div>}*/}
-          {/*</div>*/}
+
 
           {/* 右侧输出桩：连接紧后工作 */}
           <Handle type="source" position={Position.Right} id="right"

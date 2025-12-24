@@ -130,7 +130,7 @@ export function CollapsibleTabler({ children, defaultCollapsed = true, width = "
           hover={hover}
           stripe={stripe}
           showHeader={showHeader}
-          tableLayout={tableLayout ? 'auto' : 'fixed'}
+          tableLayout='fixed'
           rowClassName={({ rowIndex }) => `${rowIndex}-class`}
           cellEmptyContent={'-'}
           resizable

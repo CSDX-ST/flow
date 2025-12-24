@@ -1,11 +1,12 @@
 import React from 'react';
-import { getBezierPath, EdgeProps, useStore } from '@xyflow/react';
+import {getBezierPath, EdgeProps, useStore, useInternalNode} from '@xyflow/react';
 
 // 自定义波浪线边组件
 const WaveEdge = ({
   id,
   sourceX,
   sourceY,
+  source,
   targetX,
   targetY,
   sourcePosition,
@@ -25,10 +26,16 @@ const WaveEdge = ({
 
   // 解析路径关键点，用于生成波浪效果
  const getWavePath = () => {
+
+       // 获取源节点尺寸
+  const sourceNode = useInternalNode(source);
+  // 计算节点半径（考虑默认值）
+  const nodeRadius = ((sourceNode.measured?.width || 40) / 2) + 3;
+
   // 简化版波浪生成：基于起点和终点计算波浪路径（适配任意斜向）
-  const startX = sourceX;
+  const startX = sourceX - nodeRadius;
   const startY = sourceY;
-  const endX = targetX;
+  const endX = targetX + nodeRadius;
   const endY = targetY;
 
   const deltaX = endX - startX;
@@ -48,8 +55,9 @@ const WaveEdge = ({
   let wavePath = `M ${startX} ${startY}`;
   const stepX = deltaX / waveCount;
   const stepY = deltaY / waveCount;
+  wavePath += `L ${startX + 1.5*nodeRadius * Math.cos(pathAngle)} ${startY + 1.5*nodeRadius * Math.sin(pathAngle)}`;
 
-  for (let i = 1; i <= waveCount - 2; i++) {
+  for (let i = 4; i <= waveCount - 5; i++) {
     const currentX = startX + stepX * i;
     const currentY = startY + stepY * i;
     // 上一个分段的中点（贝塞尔曲线控制点的基础位置）
@@ -66,11 +74,12 @@ const WaveEdge = ({
     const controlX = prevSegmentMidX + offsetX;
     const controlY = prevSegmentMidY + offsetY;
 
+
     // 使用二次贝塞尔曲线绘制波浪段
     wavePath += ` Q ${controlX} ${controlY}, ${currentX} ${currentY}`;
   }
   // 连接到终点
-  wavePath += ` L ${endX} ${endY}`;
+  wavePath += ` L ${endX - nodeRadius * Math.cos(pathAngle)} ${endY - nodeRadius * Math.sin(pathAngle)}`;
 
   return wavePath;
 };

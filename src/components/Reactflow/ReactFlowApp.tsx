@@ -40,7 +40,7 @@ import {
 import { OperationLog} from "@/type/reactFlow";
 import {generateNodeId} from "@/utils/reactFlow";
 import {EdgeType} from "@/components/tools_bar";
-
+import ContextMenu from '@/components/ContextMenu';
 
 
 
@@ -234,7 +234,7 @@ const ReactFlowApp = () => {
                     id,
                     position: screenToFlowPosition({x: clientX, y: clientY}),
                     type: "ActivityNode",
-                    data: {label: `${id}`, value: "0",assignee:'nothing',name:`${id}`,forceToolbarVisible:false},
+                    data: {label: `${id}`, value: "0",assignee:'nothing',name:`${id}`},
                     origin: NODE_ORIGIN,
                 };
 
@@ -263,6 +263,7 @@ const ReactFlowApp = () => {
         },
         [screenToFlowPosition, edgeType]
     );
+
 
     // // 添加操作日志
     // const addOperationLog = useCallback((log: Omit<OperationLog, "id" | "timestamp">) => {
@@ -296,10 +297,80 @@ const ReactFlowApp = () => {
         [nodes, setNodes, setEdges]
     );
 
+    const [menu, setMenu] = useState<{ id: string; x: number; y: number; nodeId: string } | null>(null);
+
+
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    const onNodeContextMenu = useCallback(
+    (event: React.MouseEvent, node: any) => {
+      event.preventDefault();
+      const containerRect = containerRef.current?.getBoundingClientRect();
+      if (!containerRect) return;
+      const x = event.clientX - containerRect.left;
+      const y = event.clientY - containerRect.top;
+      setMenu({ id: node.id, x, y, nodeId: node.id });
+    },
+    []
+    );
+      const closeMenu = useCallback(() => {
+        setMenu(null);
+      }, []);
+
+      const handleDuplicate = useCallback(() => {
+        if (!menu) return;
+        const newNode = {
+          ...nodes.find(n => n.id === menu.nodeId),
+          id: `${menu.nodeId}_copy`
+        };
+        setNodes(prev => [...prev, newNode]);
+        closeMenu();
+      }, [menu, nodes, closeMenu]);
+
+      const handleDelete = useCallback(() => {
+        if (!menu) return;
+        setNodes(prev => prev.filter(n => n.id !== menu.nodeId));
+        closeMenu();
+      }, [menu, closeMenu]);
+
+      const handleAddNode = useCallback(() => {
+        if (!menu) return;
+        const sourceNode = nodes.find(n => n.id === menu.nodeId);
+        if (!sourceNode) return;
+        console.log('sourceNode', sourceNode);
+
+        const nodesId = generateNodeId();
+        const newNode = {
+          id: `${menu.nodeId}_new`+nodesId,
+          type: 'ActivityNode',
+          position: {
+            ...sourceNode.position,
+            x: sourceNode.position.x + 150
+          },
+          data: { label: '新节点' },
+            selected:true
+        };
+
+        const newEdge = {
+          id: `${menu.nodeId}_${newNode.id}`,
+          source: menu.nodeId,
+          target: newNode.id,
+          markerEnd: MARKER_END_CONFIG,
+          style: EDGE_STYLE,
+          type: edgeType,
+
+        };
+
+        setNodes(prev => [...prev, newNode]);
+        setEdges(prev => [...prev, newEdge]);
+        closeMenu();
+      }, [menu, nodes, closeMenu]);
+
+      const onPaneClick = useCallback(() => setMenu(null), [setMenu]);
 
 
     return (
-        <div className="w-full h-full relative">
+        <div className="w-full h-full relative" ref={containerRef} onClick={onPaneClick}>
             {showNodeManager &&
                 <NodeManager nodes={nodes} onDeleteNode={deleteNode} onRenameNode={renameNode} onAddNode={() => {
                 }}/>}
@@ -324,8 +395,19 @@ const ReactFlowApp = () => {
                 nodeOrigin={NODE_ORIGIN as [number, number]}
                 onPaneClick={handlePaneClick}
                 onNodeClick={handleNodeClick}
+                onNodeContextMenu={onNodeContextMenu}
             >
+                {menu && (
+                  <ContextMenu
+                    x={menu.x}
+                    y={menu.y}
+                    onClose={closeMenu}
+                    onDuplicate={handleDuplicate}
+                    onDelete={handleDelete}
+                    onAddNode={handleAddNode}
 
+                  />
+                )}
                 <TrianglesBackground {...BACKGROUND_SETTINGS} />
                 <ReactFlowTools
                     onUndo={handleUndo}
