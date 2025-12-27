@@ -12,7 +12,7 @@ import {
     useReactFlow,
     type Node,
     type Connection,
-    NodeToolbar
+
 } from "@xyflow/react";
 
 // 导入外部依赖
@@ -41,7 +41,7 @@ import { OperationLog} from "@/type/reactFlow";
 import {generateNodeId} from "@/utils/reactFlow";
 import {EdgeType} from "@/components/tools_bar";
 import ContextMenu from '@/components/ContextMenu';
-
+import EditNodeDialog from "@/components/data-editor-dialog"
 
 
 const ReactFlowApp = () => {
@@ -297,9 +297,35 @@ const ReactFlowApp = () => {
         [nodes, setNodes, setEdges]
     );
 
-    const [menu, setMenu] = useState<{ id: string; x: number; y: number; nodeId: string } | null>(null);
+    const [menu, setMenu] = useState<{ id: string; x: number; y: number; nodeId: string ;show:boolean} | null>(null);
+    // 定义对话框状态
+    const [editDialog, setEditDialog] = useState<{
+      visible: boolean
+      currentNode: any | null
+    }>({
+      visible: false,
+      currentNode: null,
+    })
+    const handleEditNode = useCallback(() => {
+      if (menu) {
+        // 关闭上下文菜单
+        setMenu((prev) => {
+          // 如果 prev 是 null，返回 null（保持原逻辑），否则返回完整的状态对象
+          if (prev === null) {
+            return null;
+          }
+          // 解构 prev（非 null），确保所有必填字段都存在，仅修改 show
+          return { ...prev, show: false };
+        });
 
-
+        const sourceNode = nodes.find(n => n.id === menu.nodeId);
+        // 打开编辑对话框
+        setEditDialog({
+          visible: true,
+          currentNode:sourceNode, // 传递被选中的节点
+        })
+      }
+    }, [menu])
     const containerRef = useRef<HTMLDivElement>(null);
 
     const onNodeContextMenu = useCallback(
@@ -309,7 +335,7 @@ const ReactFlowApp = () => {
       if (!containerRect) return;
       const x = event.clientX - containerRect.left;
       const y = event.clientY - containerRect.top;
-      setMenu({ id: node.id, x, y, nodeId: node.id });
+      setMenu({ id: node.id, x, y, nodeId: node.id ,show:true});
     },
     []
     );
@@ -317,15 +343,6 @@ const ReactFlowApp = () => {
         setMenu(null);
       }, []);
 
-      const handleDuplicate = useCallback(() => {
-        if (!menu) return;
-        const newNode = {
-          ...nodes.find(n => n.id === menu.nodeId),
-          id: `${menu.nodeId}_copy`
-        };
-        setNodes(prev => [...prev, newNode]);
-        closeMenu();
-      }, [menu, nodes, closeMenu]);
 
       const handleDelete = useCallback(() => {
         if (!menu) return;
@@ -367,7 +384,29 @@ const ReactFlowApp = () => {
       }, [menu, nodes, closeMenu]);
 
       const onPaneClick = useCallback(() => setMenu(null), [setMenu]);
+    // 1. 保存节点数据
+    const handleSaveNodeData = useCallback(
+      (newData: Record<string, any>) => {
+        if (editDialog.currentNode) {
+          // 更新节点状态
+          setNodes((prevNodes) =>
+            prevNodes.map((node) =>
+              node.id === editDialog.currentNode!.id
+                ? { ...node, data: { ...node.data, ...newData } } // 合并新数据
+                : node
+            ),
+          )
+          // 关闭对话框
+          setEditDialog((prev) => ({ ...prev, visible: false }))
+        }
+      },
+      [editDialog.currentNode, setNodes],
+    )
 
+    // 2. 取消编辑
+    const handleCancelEdit = useCallback(() => {
+      setEditDialog((prev) => ({ ...prev, visible: false }))
+}, [])
 
     return (
         <div className="w-full h-full relative" ref={containerRef} onClick={onPaneClick}>
@@ -397,17 +436,23 @@ const ReactFlowApp = () => {
                 onNodeClick={handleNodeClick}
                 onNodeContextMenu={onNodeContextMenu}
             >
-                {menu && (
+                {menu?.show && (
                   <ContextMenu
                     x={menu.x}
                     y={menu.y}
                     onClose={closeMenu}
-                    onDuplicate={handleDuplicate}
                     onDelete={handleDelete}
                     onAddNode={handleAddNode}
+                    onEditData={handleEditNode}
 
                   />
                 )}
+                <EditNodeDialog
+                  visible={editDialog.visible}
+                  node={editDialog.currentNode}
+                  onSave={handleSaveNodeData}   // 保存处理函数
+                  onCancel={handleCancelEdit}   // 取消处理函数
+                />
                 <TrianglesBackground {...BACKGROUND_SETTINGS} />
                 <ReactFlowTools
                     onUndo={handleUndo}

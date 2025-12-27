@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from "react"
 import { Handle, Position, NodeToolbar, useReactFlow } from "@xyflow/react"
 import { useToolbarContext } from "../ToolbarContext"
 
+
 interface ActivityNodeData {
   id: string
   position: { x: number; y: number }
@@ -50,6 +51,9 @@ const ActivityNode = ({ data, selected, id }: { data: ActivityNodeData; selected
   const [labelValue, setLabelValue] = useState(data.label as string)
   const inputRef = useRef<HTMLInputElement>(null)
   const { setNodes } = useReactFlow()
+
+  const [isDataEditorOpen, setIsDataEditorOpen] = useState(false)
+  const [editedData, setEditedData] = useState<Record<string, unknown>>({ ...data })
 
   // 自动聚焦输入框
   useEffect(() => {
@@ -100,7 +104,11 @@ const ActivityNode = ({ data, selected, id }: { data: ActivityNodeData; selected
   }
   // </CHANGE>
 
+
+
+
   return (
+      <>
     <div
       style={{
         width: "60px",
@@ -227,6 +235,7 @@ const ActivityNode = ({ data, selected, id }: { data: ActivityNodeData; selected
       {/* 右侧输出桩：连接紧后工作 */}
       <Handle type="source" position={Position.Right} id="right" style={{ background: "#888", visibility: "hidden" }} />
     </div>
+      </>
   )
 }
 
